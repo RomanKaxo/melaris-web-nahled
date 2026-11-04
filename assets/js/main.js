@@ -418,6 +418,40 @@
     items.forEach(function (i) { io.observe(i); });
   }
 
+  // Na telefonu jsou skupiny funkcí sbalené, jinak by stránka byla zbytečně dlouhá.
+  function initGroups() {
+    var groups = Array.prototype.slice.call(document.querySelectorAll('.fg'));
+    var phone = window.matchMedia('(max-width:719px)');
+    function apply() {
+      groups.forEach(function (group, i) {
+        var title = group.querySelector('h3');
+        var grid = group.querySelector('.fgrid');
+        var name = title.textContent;
+        title.textContent = '';
+        if (phone.matches) {
+          var button = document.createElement('button');
+          var open = i === 0;
+          button.type = 'button';
+          button.className = 'fg-btn';
+          button.textContent = name;
+          button.setAttribute('aria-expanded', String(open));
+          grid.hidden = !open;
+          button.addEventListener('click', function () {
+            var next = button.getAttribute('aria-expanded') !== 'true';
+            button.setAttribute('aria-expanded', String(next));
+            grid.hidden = !next;
+          });
+          title.appendChild(button);
+        } else {
+          title.textContent = name;
+          grid.hidden = false;
+        }
+      });
+    }
+    apply();
+    if (phone.addEventListener) phone.addEventListener('change', apply);
+  }
+
   function initTheme() {
     var button = document.getElementById('theme-toggle');
     if (!button) return;
@@ -441,6 +475,7 @@
 
   initTheme();
   initMotionToggle();
+  initGroups();
   initReveal();
   initHero();
   initFlow();
