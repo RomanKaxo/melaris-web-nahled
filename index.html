@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head><meta name="robots" content="noindex,nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Melaris: tým AI agentů pod kontrolou</title>
+<meta name="description" content="Melaris je pracovní prostor a LLM harness. Napíšeš jedno zadání, Mel rozdělí práci specialistům a ty vidíš, kdo co dělá, co se změnilo a co ještě čeká. Prototyp v testovacím provozu.">
+<link rel="canonical" href="https://melaris.cz/">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#171522">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#FAF6FF">
+<meta name="color-scheme" content="dark light">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="cs_CZ">
+<meta property="og:site_name" content="Melaris">
+<meta property="og:title" content="Melaris: tým AI agentů pod kontrolou">
+<meta property="og:description" content="Pracovní prostor a LLM harness. Jedno zadání, tým specialistů a dohledatelný průběh práce.">
+<meta property="og:url" content="https://melaris.cz/">
+<meta property="og:image" content="https://melaris.cz/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Rubínové M a nápis Melaris na grafitovém pozadí">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/assets/fonts/sora-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/sora-latin-ext-wght.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/site.css">
+<script src="/assets/js/early.js"></script>
+<script src="/assets/js/main.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#obsah">Přeskočit na obsah</a>
+
+<header class="bar">
+  <a class="bar-logo" href="#obsah" aria-label="Melaris, začátek stránky">
+    <svg viewBox="0 0 210 44" fill="none" aria-hidden="true" focusable="false">
+      <defs><linearGradient id="ruby-bar" x1="3" y1="5" x2="43" y2="39" gradientUnits="userSpaceOnUse"><stop stop-color="#f21b68"/><stop offset=".5" stop-color="#d91b60"/><stop offset="1" stop-color="#85254e"/></linearGradient></defs>
+      <path fill="url(#ruby-bar)" d="M3 39V7l9-2 11 17L34 5l9 2v32H32V23L23 36l-9-13v16H3Z"/>
+      <path fill="#ff5596" d="m3 7 9-2 11 17-5 7L3 7Z"/>
+      <path fill="#b9215c" d="m23 22 11-17 9 2-15 22-5-7Z"/>
+      <path fill="#7f244c" d="m3 39 11-16v16H3Zm29-16 11 16H32V23Z"/>
+      <g transform="translate(-32 0)" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M99 12H84v20h15M84 22h12"/><path d="M111 12v20h15"/><path d="m137 32 8-20 8 20m-13-6h10"/><path d="M166 32V12h9a5 5 0 0 1 0 10h-9m8 0 8 10"/><path d="M194 12v20"/><path d="M223 12h-10a5 5 0 0 0 0 10h5a5 5 0 0 1 0 10h-11"/>
+      </g>
+      <path fill="#f21b68" d="m203 27 4 4-4 4-4-4 4-4Z"/>
+    </svg>
+  </a>
+  <nav class="bar-nav" aria-label="Sekce stránky">
+    <a href="#proc">Proč vznikl</a>
+    <a href="#jak">Jak funguje</a>
+    <a href="#funkce">Funkce</a>
+    <a href="#mel">Mel</a>
+  </nav>
+  <div class="bar-tools">
+    <button class="icon-btn" type="button" id="motion-toggle" aria-pressed="false" aria-label="Zastavit animace" title="Zastavit animace">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="i-pause" d="M8 5v14M16 5v14"/><path class="i-play" d="M8 5l11 7-11 7Z"/></svg>
+    </button>
+    <button class="icon-btn" type="button" id="theme-toggle" aria-label="Přepnout světlý a tmavý vzhled" title="Přepnout světlý a tmavý vzhled">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8"/><path class="half" d="M12 4a8 8 0 0 1 0 16Z"/></svg>
+    </button>
+    <a class="btn btn-small" href="https://test.melaris.cz">Přihlásit se</a>
+  </div>
+</header>
+
+<main id="obsah" tabindex="-1">
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-text">
+    <h1 id="hero-title"><span>Tým AI agentů</span> <span>pod kontrolou</span></h1>
+    <p class="lead">Melaris je pracovní prostor a LLM harness. Napíšeš jedno zadání, Mel rozdělí práci specialistům a ty vidíš, kdo co dělá, co se změnilo a co ještě čeká.</p>
+    <div class="hero-actions">
+      <a class="btn" href="https://test.melaris.cz">Přihlásit se do testovacího provozu</a>
+      <a class="text-link" href="#jak">Jak to funguje</a>
+    </div>
+    <p class="note">Verze 0.2.0. Prototyp ve vývoji, zatím v testovacím provozu.</p>
+  </div>
+  <figure class="hero-m" id="hero-m" aria-label="Cesta jednoho běhu po tvaru písmene M: zadání, Mel, práce, kontrola, výsledek.">
+    <svg viewBox="3 5 40 34" fill="none" aria-hidden="true" focusable="false">
+      <defs><linearGradient id="ruby-hero" x1="3" y1="5" x2="43" y2="39" gradientUnits="userSpaceOnUse"><stop stop-color="#f21b68"/><stop offset=".5" stop-color="#d91b60"/><stop offset="1" stop-color="#85254e"/></linearGradient></defs>
+      <path fill="url(#ruby-hero)" d="M3 39V7l9-2 11 17L34 5l9 2v32H32V23L23 36l-9-13v16H3Z"/>
+      <path fill="#ff5596" d="m3 7 9-2 11 17-5 7L3 7Z"/>
+      <path fill="#b9215c" d="m23 22 11-17 9 2-15 22-5-7Z"/>
+      <path fill="#7f244c" d="m3 39 11-16v16H3Zm29-16 11 16H32V23Z"/>
+      <path class="run-trail" id="run-trail" d="M8.5 39V8L23 30 37.5 8v31"/>
+      <circle class="run-dot" id="run-dot" cx="37.5" cy="39" r="1.25"/>
+    </svg>
+    <ol class="stops">
+      <li class="stop s-a">Zadání</li>
+      <li class="stop s-b">Mel</li>
+      <li class="stop s-c">Práce</li>
+      <li class="stop s-d">Kontrola</li>
+      <li class="stop s-e">Výsledek</li>
+    </ol>
+  </figure>
+</section>
+
+<section class="why" id="proc" aria-labelledby="proc-title">
+  <h2 id="proc-title" class="rv">Proč Melaris vznikl</h2>
+  <p class="statement rv">Jazykový model umí odpovědět textem. Aby četl soubory, spouštěl příkazy a držel se pravidel, potřebuje kolem sebe program, který ho řídí. Tomu se říká harness.</p>
+  <div class="why-cols">
+    <div class="rv">
+      <p>Melaris vzniká jako maturitní projekt na téma vývoj LLM harnessu. Má vlastní agentní smyčku v Node.js a nad jedním místním jádrem stojí webové rozhraní i terminálové CLI.</p>
+      <p>Měl vyřešit jednu konkrétní věc: spojit konverzaci se skutečnou prací na projektu tak, aby šlo zpětně dohledat zadání, průběžné zprávy, změny souborů i výstupy.</p>
+    </div>
+    <div class="rv">
+      <h3>Co harness v Melarisu dělá</h3>
+      <ul class="plain">
+        <li>Volá model, ověřuje jeho návrhy nástrojů a vrací mu výsledky.</li>
+        <li>Určuje, které nástroje a složky jsou v daném běhu povolené.</li>
+        <li>Hlídá společný rozpočet kroků, nástrojů a výstupních tokenů.</li>
+        <li>Zhušťuje dlouhý kontext, aby se práce vešla do modelu.</li>
+        <li>Před zápisem ukládá kontrolní bod, takže změny souboru jdou vrátit.</li>
+        <li>Průběžně ukládá stav. Přerušenou úlohu navážeš tlačítkem Pokračovat.</li>
+      </ul>
+    </div>
+  </div>
+  <h3 class="name-title rv">Co znamená jméno</h3>
+  <dl class="name rv">
+    <div><dt>M</dt><dd>Multi-agent</dd></div>
+    <div><dt>E</dt><dd>Efficient</dd></div>
+    <div><dt>L</dt><dd>Lightweight</dd></div>
+    <div><dt>A</dt><dd>Autonomous</dd></div>
+    <div><dt>R</dt><dd>Rapid</dd></div>
+    <div><dt>I</dt><dd>Intelligent</dd></div>
+    <div><dt>S</dt><dd>System</dd></div>
+  </dl>
+  <p class="note rv">Dřívější název projektu byl Elaris. M přibylo kvůli týmu agentů: znamená Multi-agent.</p>
+</section>
+
+<section class="how" id="jak" aria-labelledby="jak-title">
+  <div class="how-side rv">
+    <h2 id="jak-title">Jak funguje jeden běh</h2>
+    <p>Stejný postup platí ve webu i v terminálu. V terminálu ho spustíš třeba takhle:</p>
+    <pre><code>melaris --cwd ~/Projects/moje-aplikace
+melaris --plan     # průzkum bez zápisu
+melaris --resume   # navázat na poslední konverzaci</code></pre>
+  </div>
+  <ol class="steps">
+    <li class="rv">
+      <h3>Napíšeš zadání</h3>
+      <p>Připojíš složku projektu a vybereš model. Běh si hned při startu zapíše, jaká má oprávnění, nástroje a síť.</p>
+    </li>
+    <li class="rv">
+      <h3>Model si načte skill</h3>
+      <p>Skill je návod na konkrétní druh práce. Model si ho sám vybere a Melaris ověří, že ho opravdu dostal. Do té doby ostatní nástroje odmítá.</p>
+    </li>
+    <li class="rv">
+      <h3>Mel rozdělí práci</h3>
+      <p>V režimu Mel + tým přidělí úkoly z katalogu 23 specialistů, nejvýš třem najednou. Do jednoho souboru zapisují po jednom a všechno vidíš ve společném chatu.</p>
+    </li>
+    <li class="rv">
+      <h3>Běží agentní smyčka</h3>
+      <p>Melaris zavolá model, zkontroluje navržený nástroj, provede ho a výsledek vrátí modelu. Opakuje se to, dokud není práce hotová nebo nedojde rozpočet.</p>
+    </li>
+    <li class="rv">
+      <h3>Citlivé kroky čekají na člověka</h3>
+      <p>Příkazy v shellu mimo krátký seznam čtecích příkazů se schvalují. Když úloha čeká na tvoje rozhodnutí déle než 10 minut, přijde upozornění.</p>
+    </li>
+    <li class="rv">
+      <h3>Dostaneš výsledek s podklady</h3>
+      <p>Odpověď, změněné soubory s diffem a možnost změny vrátit. Práci z oddělené kopie sloučíš nebo zahodíš. Zastavený běh zůstane označený jako nedokončený.</p>
+    </li>
+  </ol>
+</section>
+
+<section class="features" id="funkce" aria-labelledby="funkce-title">
+  <div class="features-head rv">
+    <p class="tag">Živé schéma</p>
+    <h2 id="funkce-title">Funkce v pohybu</h2>
+    <p>Schémata popisují skutečné chování Melarisu. Pohyb a čísla v nich jsou ilustrační, nejsou to živá data z provozu.</p>
+  </div>
+
+  <div class="bento">
+    <article class="card card-wide rv" aria-labelledby="f1-title">
+      <span class="corner tl" aria-hidden="true"></span><span class="corner tr" aria-hidden="true"></span><span class="corner bl" aria-hidden="true"></span><span class="corner br" aria-hidden="true"></span>
+      <div class="schema flow" id="flow" role="img" aria-label="Schéma: zadání z webu, terminálu, plánovače, Telegramu a nástěnky jdou do Melarisu. Z něj vycházejí změny souborů, pracovní větev a denní souhrn. Draft PR je zatím vypnutý.">
+        <svg class="wires" aria-hidden="true" focusable="false"></svg>
+        <ul class="flow-in">
+          <li class="chip" data-in><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>Web</li>
+          <li class="chip" data-in><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 8 4 4-4 4M12 17h7"/></svg>Terminál</li>
+          <li class="chip" data-in><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/></svg>Plánovač</li>
+          <li class="chip" data-in><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 18-7-3 16-6-4-3 4v-6Z"/></svg>Telegram, jen čtení</li>
+          <li class="chip" data-in><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M10 4v16M4 11h6"/></svg>Karta na nástěnce</li>
+        </ul>
+        <div class="flow-hub" data-hub>
+          <svg viewBox="0 0 46 44" aria-hidden="true"><use href="#m-mark"/></svg>
+          <span>Melaris</span>
+        </div>
+        <div class="flow-out">
+          <div class="stack" data-stack>
+            <div class="sheet s2"><b>Denní souhrn</b><span>Hotové a chybné běhy, změněné soubory, tokeny</span></div>
+            <div class="sheet s1"><b>Pracovní větev</b><span><code>melaris/run-…</code> v oddělené kopii</span></div>
+            <div class="sheet s0"><b>Změny souborů</b><span>Diff a možnost změny vrátit</span></div>
+          </div>
+          <p class="counter" data-counter aria-hidden="true">Ukázkový výstup</p>
+          <div class="planned" data-planned><b>Draft PR</b><span>Modul je připravený, zatím vypnutý</span></div>
+        </div>
+      </div>
+      <h3 id="f1-title">Lidé a úkoly dovnitř, ověřitelné výstupy ven</h3>
+      <p>Práci zadá člověk ve webu nebo v terminálu, přijde z plánovače, z telefonu přes Telegram nebo z karty na nástěnce. Ven jdou změny souborů, větev v oddělené kopii a souhrn. Čárkovaně je to, co ještě neběží.</p>
+    </article>
+
+    <article class="card rv" aria-labelledby="f2-title">
+      <span class="corner tl" aria-hidden="true"></span><span class="corner tr" aria-hidden="true"></span><span class="corner bl" aria-hidden="true"></span><span class="corner br" aria-hidden="true"></span>
+      <div class="schema hub" id="hub" role="group" aria-label="Připojení modelů">
+        <svg class="wires" aria-hidden="true" focusable="false"></svg>
+        <div class="hub-col">
+          <p class="hub-label">Předplatná</p>
+          <button type="button" class="tile" data-detail="Originální Claude Code na tvém předplatném Claude. Přihlášení děláš sám."><img src="/assets/providers/claude.svg" alt="" width="24" height="24"><span>Claude Code</span></button>
+          <button type="button" class="tile" data-detail="ChatGPT přes originální Codex CLI. Ve výchozím stavu jen čte, zápis povolíš u profilu."><img src="/assets/providers/openai.svg" alt="" width="24" height="24"><span>Codex</span></button>
+          <button type="button" class="tile" data-detail="Originální agent xAI, výchozí stav jen čtení. Výběr skillu jsme s ním zatím živě neověřili."><img src="/assets/providers/grok.svg" alt="" width="24" height="24"><span>Grok Build</span></button>
+        </div>
+        <div class="hub-center">
+          <div class="hub-node" data-hub>
+            <svg viewBox="0 0 46 44" aria-hidden="true"><use href="#m-mark"/></svg>
+          </div>
+        </div>
+        <div class="hub-col">
+          <p class="hub-label">Modely</p>
+          <button type="button" class="tile" data-detail="Místní brána k dalším službám, včetně webových účtů. Melaris ji umí stáhnout a spustit na 127.0.0.1."><span class="mono-ic" aria-hidden="true">OR</span><span>OmniRoute</span></button>
+          <button type="button" class="tile" data-detail="Model běží přímo na tvém počítači."><img src="/assets/providers/ollama.svg" alt="" width="24" height="24"><span>Ollama</span></button>
+          <button type="button" class="tile" data-detail="OpenAI, Anthropic, Perplexity, xAI, Mistral, DeepSeek, Gemini, OpenRouter nebo Groq."><svg class="key-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="4.5"/><path d="m11.5 11.5 8-8M16 7l3 3"/></svg><span>API klíč</span></button>
+        </div>
+      </div>
+      <p class="sync" id="hub-sync" aria-live="off"><span class="sync-line">připojení · <b id="hub-name">Claude Code</b></span><span id="hub-detail">Originální Claude Code na tvém předplatném Claude. Přihlášení děláš sám.</span></p>
+      <h3 id="f2-title">Tvoje předplatná a modely</h3>
+      <p>Předplatná běží v originálním programu poskytovatele. Ostatní modely připojíš přes OmniRoute, Ollamu nebo API klíč. Zvolený model se při chybě sám nezmění, pomůžou jen tebou nastavené záložní modely.</p>
+    </article>
+
+    <article class="card rv" aria-labelledby="f3-title">
+      <span class="corner tl" aria-hidden="true"></span><span class="corner tr" aria-hidden="true"></span><span class="corner bl" aria-hidden="true"></span><span class="corner br" aria-hidden="true"></span>
+      <div class="schema gates" id="gates">
+        <div class="gates-chart" data-chart>
+          <svg viewBox="0 0 600 260" aria-hidden="true" focusable="false">
+            <clipPath id="gate-clip"><rect data-clip x="0" y="0" width="40" height="260"/></clipPath>
+            <path class="grid" d="M24 66H576M24 130H576M24 194H576"/>
+            <path class="gate-human" d="M340 16V244"/>
+            <path class="area" data-area clip-path="url(#gate-clip)"/>
+            <path class="curve" data-curve/>
+            <path class="curve-on" data-curve-on/>
+            <g data-marks></g>
+            <circle class="head-ring" data-head-ring r="15"/>
+            <circle class="head" data-head r="6"/>
+          </svg>
+          <span class="gate-note" data-gate-note>člověk rozhoduje</span>
+          <span class="pill" data-pill>Zadání</span>
+        </div>
+        <label class="range-wrap"><span class="vh">Krok běhu</span><input type="range" min="0" max="5" step="1" value="0" data-range></label>
+        <ol class="gate-steps" data-steps aria-live="off">
+          <li><h4>Zadání</h4><p>Běh se založí a zapíše si snímek oprávnění: režim, nástroje, síť. Když později navazuješ, uvidíš rozdíl.</p></li>
+          <li><h4>Povinný skill</h4><p>Před načtením skillu model nedostane žádný jiný nástroj. Po dvou neúspěšných opravách běh skončí jako nedokončený.</p></li>
+          <li><h4>Oddělený běh</h4><p>Úloha může pracovat ve vlastní kopii na větvi <code>melaris/run-…</code>. Serverový režim v kontejneru bez sítě je napsaný, ale zatím vypnutý a v přejímce.</p></li>
+          <li><h4>Schválení člověkem</h4><p>Příkazy čekají na souhlas. Kritickou akci neschválí sám zadavatel, ani když je vlastník. Produkce a finance jsou odmítnuté.</p></li>
+          <li><h4>Audit</h4><p>Schválení, změny oprávnění a pauzy jdou do řetězeného záznamu s HMAC. Příkaz <code>melaris audit</code> ho ověří a nahlásí přerušení.</p></li>
+          <li><h4>Výsledek</h4><p>Změny vidíš jako diff a sloučíš je, nebo zahodíš. Nedokončená práce se neoznačí jako hotová.</p></li>
+        </ol>
+      </div>
+      <h3 id="f3-title">Pojistky v běhu</h3>
+      <p>Přejeď po křivce nebo použij posuvník a šipky. U každého kroku je napsané, co platí a co je zatím vypnuté.</p>
+    </article>
+  </div>
+</section>
+
+<section class="value" id="vyhody" aria-labelledby="vyhody-title">
+  <h2 id="vyhody-title" class="rv">Výhody a s čím počítat</h2>
+  <p class="value-intro rv">Melaris použij, když chceš agenty pustit na vlastní projekt a přitom vidět, co dělají. Ke každé výhodě patří i její hranice.</p>
+  <div class="table-wrap rv">
+  <table>
+    <thead><tr><th scope="col">Co získáš</th><th scope="col">S čím počítat</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Co získáš"><b>Tým místo jednoho chatu.</b> Mel přidělí práci specialistům a jejich zprávy jsou v jedné konverzaci s autorem a časem.</td><td data-label="S čím počítat">Kvalita závisí na modelu. Profily sdílejí oprávnění i rozpočet úlohy.</td></tr>
+      <tr><td data-label="Co získáš"><b>Vlastní volba modelu.</b> Předplatná, API, OmniRoute i Ollama. Na jednoho poskytovatele nejsi vázaný.</td><td data-label="S čím počítat">Potřebuješ vlastní model nebo účet. Podmínky a limity poskytovatele platí dál.</td></tr>
+      <tr><td data-label="Co získáš"><b>Práce jde zkontrolovat.</b> Diff ke každému změněnému souboru, kontrolní body a tlačítko pro vrácení změn.</td><td data-label="S čím počítat">Soubory nad 2 MB kontrolní bod nemají. Zápisy shellem a terminálové relace taky ne.</td></tr>
+      <tr><td data-label="Co získáš"><b>Data máš u sebe.</b> Na tvém počítači běží aplikace, projekty i historie a server poslouchá jen na 127.0.0.1. Vzdálený přístup je výchozím stavem vypnutý.</td><td data-label="S čím počítat">Se vzdáleným poskytovatelem AI k němu odchází potřebné zadání a kontext.</td></tr>
+      <tr><td data-label="Co získáš"><b>Provoz bez dozoru s pojistkami.</b> Plánovač, Zastavit vše, strop spotřeby a karanténa úlohy, která třikrát po sobě selže.</td><td data-label="S čím počítat">Plán běží jen při spuštěném Melarisu. Po restartu se nic nespouští samo, navázání potvrzuješ ty.</td></tr>
+      <tr><td data-label="Co získáš"><b>Spotřeba je čitelná.</b> Vidíš dostupné údaje o tokenech a nastavíš denní a měsíční strop.</td><td data-label="S čím počítat">Chybějící údaj zůstává neznámý. Konkrétní úspora není zaručená.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section class="mel" id="mel" aria-labelledby="mel-title">
+  <div class="mel-art rv">
+    <svg id="mel-avatar" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="mel-shell-paint" x1="20" y1="17" x2="77" y2="87" gradientUnits="userSpaceOnUse"><stop stop-color="#5d4d76"/><stop offset=".48" stop-color="#352d46"/><stop offset="1" stop-color="#252130"/></linearGradient>
+        <linearGradient id="mel-accent-paint" x1="28" y1="17" x2="65" y2="33" gradientUnits="userSpaceOnUse"><stop stop-color="#f21b68"/><stop offset=".58" stop-color="#d91b60"/><stop offset="1" stop-color="#85254e"/></linearGradient>
+        <linearGradient id="mel-face-paint" x1="27" y1="36" x2="68" y2="76" gradientUnits="userSpaceOnUse"><stop stop-color="#24202f"/><stop offset="1" stop-color="#15131e"/></linearGradient>
+      </defs>
+      <g class="mel-body">
+        <path fill="url(#mel-shell-paint)" stroke="#9c80be" stroke-width="2.2" stroke-linejoin="round" d="M24 19 Q50 9 76 22 Q88 30 86 56 L83 71 Q80 87 62 88 L34 87 Q17 84 15 68 L13 45 Q12 27 24 19Z"/>
+        <path fill="#252130" d="M80 31 Q88 47 81 70 Q78 84 62 85 L35 84 Q23 82 19 73 Q29 80 42 79 L64 79 Q77 77 79 63Z"/>
+        <path fill="none" stroke="#c7b1e0" stroke-width="2.3" stroke-linecap="round" d="M19 41 Q18 30 25 25"/>
+        <path fill="url(#mel-accent-paint)" d="M25 21 Q46 12 71 22 L64 31 Q44 23 25 31Z"/>
+        <path fill="none" stroke="#ff88b6" stroke-width="1.6" stroke-linecap="round" d="M28 23 Q44 17 63 22"/>
+        <rect fill="url(#mel-face-paint)" stroke="#554167" stroke-width="2.2" x="22" y="35" width="56" height="41" rx="18"/>
+        <path fill="none" stroke="#746284" stroke-width="1.5" stroke-linecap="round" d="M29 44 Q31 39 37 39"/>
+        <g class="mel-eyes" fill="none" stroke="#faf6ff" stroke-width="9" stroke-linecap="round"><path d="M38 49 Q38 52 38 55"/><path d="M62 49 Q62 52 62 55"/></g>
+        <path fill="none" stroke="#b96a98" stroke-width="2.5" stroke-linecap="round" opacity=".65" d="M31 63 H36 M64 63 H69"/>
+        <path fill="none" stroke="#faf6ff" stroke-width="3.6" stroke-linecap="round" d="M44 64 Q50 72 57 64"/>
+        <circle class="mel-signal-ring" fill="#32263f" stroke="#9c80be" stroke-width="1.4" cx="76" cy="24" r="6.2"/>
+        <circle class="mel-signal" fill="#f7b3d5" cx="76" cy="24" r="4.1"/>
+      </g>
+    </svg>
+    <p class="bubble you">Jak přidám předplatné?</p>
+    <p class="bubble him">Ukážu ti to. Zbytek obrazovky ztmavne a správné místo se rozsvítí.</p>
+  </div>
+  <div class="mel-text rv">
+    <h2 id="mel-title">Mel ti to ukáže</h2>
+    <p>Mel je maskot Melarisu a tvůj společný partner v chatu. Když nevíš, kde co je, klikneš na něj a zeptáš se. Spustí průvodce, který zvýrazní správné místo a krok za krokem vysvětlí, co tam je.</p>
+    <p>Průvodců je 15 a běžné otázky pozná česky i anglicky bez volání AI.</p>
+    <p>Za ním stojí posádka 23 specialistů s vlastními jmény, portréty a instrukcemi, třeba Iris na design a Kern na techniku. Automaticky je nevolá všechny.</p>
+  </div>
+</section>
+
+<section class="state" id="stav" aria-labelledby="stav-title">
+  <div class="state-main rv">
+    <h2 id="stav-title">Kde je Melaris dnes</h2>
+    <p>Melaris 0.2.0 je funkční prototyp ve vývoji a běží v testovacím provozu bez produkčních dat. Poslední úplná kontrola kódu ze 4. 11. 2026: 3 092 automatických testů, žádné selhání, 5 přeskočených. Testy běžely bez živých modelů a skutečných účtů.</p>
+    <h3>Co ještě hotové není</h3>
+    <ul class="plain">
+      <li>Draft PR přes GitHub App: knihovna je napsaná, ale vypnutá a bez skutečné App.</li>
+      <li>Izolovaný serverový režim: výchozím stavem vypnutý, dlouhodobý provoz a reboot nejsou ověřené.</li>
+      <li>Produkční hosting: zatím jen oddělený simulační pilot.</li>
+      <li>Úplný výmaz všech kopií dat a jednotný export.</li>
+      <li>Fyzické telefony, Firefox a Safari, živé ověření všech poskytovatelů.</li>
+    </ul>
+  </div>
+  <aside class="onhost rv" aria-labelledby="onhost-title">
+    <h2 id="onhost-title">Ve spolupráci s ONHOST</h2>
+    <p>ONHOST je česká hostingová platforma. Melaris vzniká ve spolupráci s ní a má pro její vývoj vlastní šablonu projektu: pokyny, pravidla pro soubory, na kterých smí pracovat jen jedna karta, bránu kvality a role od architekta přes backend a databázi po QA a bezpečnost.</p>
+    <p>Společný pilot se připravuje a zatím schválený není.</p>
+    <a class="text-link" href="https://onhost.cz" rel="noopener">onhost.cz</a>
+  </aside>
+</section>
+
+<section class="cta" id="prihlaseni" aria-labelledby="cta-title">
+  <h2 id="cta-title" class="rv">Zkus testovací provoz</h2>
+  <div class="cta-side rv">
+    <p>Přihlášení chce účet od správce, heslo a druhý faktor. Veřejná registrace není.</p>
+    <a class="btn btn-dark" href="https://test.melaris.cz">Přihlásit se</a>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <svg class="foot-word" viewBox="0 0 210 44" fill="none" role="img" aria-label="Melaris">
+    <use href="#m-mark"/>
+    <g transform="translate(-32 0)" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M99 12H84v20h15M84 22h12"/><path d="M111 12v20h15"/><path d="m137 32 8-20 8 20m-13-6h10"/><path d="M166 32V12h9a5 5 0 0 1 0 10h-9m8 0 8 10"/><path d="M194 12v20"/><path d="M223 12h-10a5 5 0 0 0 0 10h5a5 5 0 0 1 0 10h-11"/>
+    </g>
+    <path fill="#f21b68" d="m203 27 4 4-4 4-4-4 4-4Z"/>
+  </svg>
+  <div class="foot-row">
+    <p>Od zadání k výsledku.</p>
+    <p>Písmo Sora: <a href="/assets/fonts/Sora-OFL.txt">SIL OFL 1.1</a>. Ikony služeb: lobe-icons, <a href="/assets/providers/LICENSE-lobe-icons.txt">licence MIT</a>. Názvy a značky služeb patří jejich vlastníkům a neznamenají jejich podporu.</p>
+  </div>
+</footer>
+
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="ruby-use" x1="3" y1="5" x2="43" y2="39" gradientUnits="userSpaceOnUse"><stop stop-color="#f21b68"/><stop offset=".5" stop-color="#d91b60"/><stop offset="1" stop-color="#85254e"/></linearGradient>
+    <g id="m-mark">
+      <path fill="url(#ruby-use)" d="M3 39V7l9-2 11 17L34 5l9 2v32H32V23L23 36l-9-13v16H3Z"/>
+      <path fill="#ff5596" d="m3 7 9-2 11 17-5 7L3 7Z"/>
+      <path fill="#b9215c" d="m23 22 11-17 9 2-15 22-5-7Z"/>
+      <path fill="#7f244c" d="m3 39 11-16v16H3Zm29-16 11 16H32V23Z"/>
+    </g>
+  </defs>
+</svg>
+</body>
+</html>

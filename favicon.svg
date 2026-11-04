@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 46 44" fill="none"><title>Melaris</title><defs><linearGradient id="ruby" x1="3" y1="5" x2="43" y2="39" gradientUnits="userSpaceOnUse"><stop stop-color="#f21b68"/><stop offset=".5" stop-color="#d91b60"/><stop offset="1" stop-color="#85254e"/></linearGradient></defs><g id="brand-symbol">
+    <path fill="url(#ruby)" d="M3 39V7l9-2 11 17L34 5l9 2v32H32V23L23 36l-9-13v16H3Z"/>
+    <path fill="#ff5596" d="m3 7 9-2 11 17-5 7L3 7Z"/>
+    <path fill="#b9215c" d="m23 22 11-17 9 2-15 22-5-7Z"/>
+    <path fill="#7f244c" d="m3 39 11-16v16H3Zm29-16 11 16H32V23Z"/>
+    <path stroke="#ff9fc7" stroke-opacity=".6" d="m3 7 15 22 5-7M34 5 23 22l5 7M14 23 3 39m29-16 11 16"/>
+  </g></svg>
