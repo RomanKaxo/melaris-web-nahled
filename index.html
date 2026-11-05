@@ -270,27 +270,36 @@
 
 
 <section class="ui" id="ukazky" aria-labelledby="ukazky-title">
+  <div class="ui-panel" data-ui-panel>
   <div class="sec-head rv">
     <h2 id="ukazky-title">Jak rozhraní vypadá</h2>
     <p>Zjednodušené kresby skutečných obrazovek. Popisky jsou z aplikace, obsah a grafy jsou ilustrační.</p>
   </div>
-  <div class="ui-grid">
-    <figure class="rv"><svg viewBox="0 0 340 190" role="img" aria-label="Kresba editoru chatu s popiskem Tvoje zadání, třemi režimy práce a tlačítkem Odeslat.">
+  <ol class="ui-list">
+    <li>
+      <div class="ui-item rv"><h3><button type="button" class="ui-btn" id="ui-b1" aria-controls="ui-f1"><span class="ui-n" aria-hidden="true">1</span><span>Editor chatu</span></button></h3><p>Napíšeš zadání a vybereš režim: Mel + tým, běžná odpověď, nebo plán a kontrola.</p></div>
+      <figure class="ui-fig" id="ui-f1"><svg viewBox="0 0 340 190" role="img" aria-label="Kresba editoru chatu s popiskem Tvoje zadání, třemi režimy práce a tlačítkem Odeslat.">
       <rect class="u-bg" width="340" height="190"/><text class="u-m" x="16" y="26">Tvoje zadání</text>
       <rect class="u-pn" x="16" y="36" width="308" height="62"/><text class="u-t" x="28" y="60">Oprav přihlašovací formulář</text><text class="u-m" x="28" y="80">a ověř ho v prohlížeči</text>
       <rect class="u-on" x="16" y="108" width="84" height="26"/><text class="u-a" x="26" y="125">Mel + tým</text>
-      <rect class="u-pn" x="106" y="108" width="108" height="26"/><text class="u-t" x="116" y="125">Běžná odpověď</text>
-      <rect class="u-pn" x="220" y="108" width="104" height="26"/><text class="u-t" x="228" y="125">Plán a kontrola</text>
+      <rect class="u-pn" x="106" y="108" width="114" height="26"/><text class="u-t" x="114" y="125">Běžná odpověď</text>
+      <rect class="u-pn" x="226" y="108" width="98" height="26"/><text class="u-t" x="232" y="125">Plán a kontrola</text>
       <text class="u-m" x="16" y="166">Projekt · Další volby</text><rect class="u-fx" x="248" y="146" width="76" height="30"/><text class="u-d" x="262" y="166">Odeslat</text>
-    </svg><figcaption>Editor chatu</figcaption></figure>
-    <figure class="rv"><svg viewBox="0 0 340 190" role="img" aria-label="Kresba plánu agenta: tři úkoly specialistů se stavy Hotovo, Probíhá a Čeká a řádek se změněným souborem.">
+    </svg></figure>
+    </li>
+    <li>
+      <div class="ui-item rv"><h3><button type="button" class="ui-btn" id="ui-b2" aria-controls="ui-f2"><span class="ui-n" aria-hidden="true">2</span><span>Plán a změny v chatu</span></button></h3><p>Vidíš úkoly specialistů, jejich stav i změněné soubory.</p></div>
+      <figure class="ui-fig" id="ui-f2"><svg viewBox="0 0 340 190" role="img" aria-label="Kresba plánu agenta: tři úkoly specialistů se stavy Hotovo, Probíhá a Čeká a řádek se změněným souborem.">
       <rect class="u-bg" width="340" height="190"/><text class="u-t" x="16" y="26">Plán agenta</text>
       <g><path class="u-fxp" d="m22 42 6 6-6 6-6-6z"/><text class="u-t" x="38" y="53">Iris: návrh formuláře</text><text class="u-m" x="276" y="53">Hotovo</text></g>
       <g><path class="u-fxp" d="m22 72 6 6-6 6-6-6z"/><text class="u-t" x="38" y="83">Kern: úprava kódu</text><text class="u-a" x="270" y="83">Probíhá</text></g>
       <g><path class="u-lnp" d="m22 102 6 6-6 6-6-6z"/><text class="u-m" x="38" y="113">Kontrola v prohlížeči</text><text class="u-m" x="290" y="113">Čeká</text></g>
       <rect class="u-pn" x="16" y="128" width="308" height="48"/><text class="u-m" x="28" y="147">Změněný soubor</text><text class="u-a" x="28" y="166">+ řádek</text><text class="u-m" x="86" y="166">− řádek</text>
-    </svg><figcaption>Plán a změny v chatu</figcaption></figure>
-    <figure class="rv"><svg viewBox="0 0 340 190" role="img" aria-label="Kresba nástěnky se sloupci K převzetí, Rozpracováno, Ke kontrole a Hotovo.">
+    </svg></figure>
+    </li>
+    <li>
+      <div class="ui-item rv"><h3><button type="button" class="ui-btn" id="ui-b3" aria-controls="ui-f3"><span class="ui-n" aria-hidden="true">3</span><span>Nástěnka úkolů</span></button></h3><p>Karty procházejí sloupci K převzetí, Rozpracováno, Ke kontrole a Hotovo.</p></div>
+      <figure class="ui-fig" id="ui-f3"><svg viewBox="0 0 340 190" role="img" aria-label="Kresba nástěnky se sloupci K převzetí, Rozpracováno, Ke kontrole a Hotovo.">
       <rect class="u-bg" width="340" height="190"/>
       <text class="u-m" x="12" y="24">K převzetí</text><text class="u-m" x="84" y="24">Rozpracováno</text><text class="u-m" x="186" y="24">Ke kontrole</text><text class="u-m" x="276" y="24">Hotovo</text>
       <rect class="u-pn" x="12" y="34" width="64" height="44"/><rect class="u-pn" x="12" y="84" width="64" height="44"/><rect class="u-pn" x="12" y="134" width="64" height="44"/>
@@ -298,26 +307,37 @@
       <rect class="u-pn" x="186" y="34" width="82" height="44"/>
       <rect class="u-pn" x="276" y="34" width="52" height="44"/><rect class="u-pn" x="276" y="84" width="52" height="44"/>
       <text class="u-t" x="94" y="60">Tvoje karta</text>
-    </svg><figcaption>Nástěnka úkolů</figcaption></figure>
-    <figure class="rv"><svg viewBox="0 0 340 190" role="img" aria-label="Kresba Pošty: záložky Schránka, Souhrny a Účty, seznam zpráv a okno pro čtení.">
+    </svg></figure>
+    </li>
+    <li>
+      <div class="ui-item rv"><h3><button type="button" class="ui-btn" id="ui-b4" aria-controls="ui-f4"><span class="ui-n" aria-hidden="true">4</span><span>Pošta</span></button></h3><p>Schránka, souhrny a účty, seznam zpráv a čtení s odpovědí na jednom místě.</p></div>
+      <figure class="ui-fig" id="ui-f4"><svg viewBox="0 0 340 190" role="img" aria-label="Kresba Pošty: záložky Schránka, Souhrny a Účty, seznam zpráv a okno pro čtení.">
       <rect class="u-bg" width="340" height="190"/>
       <text class="u-a" x="16" y="24">Schránka</text><text class="u-m" x="84" y="24">Souhrny</text><text class="u-m" x="148" y="24">Účty</text>
       <rect class="u-pn" x="16" y="36" width="86" height="142"/><text class="u-t" x="24" y="56">Doručené</text><text class="u-m" x="24" y="78">Štítky</text><text class="u-m" x="24" y="100">Odeslané</text>
       <rect class="u-on" x="110" y="36" width="96" height="42"/><rect class="u-pn" x="110" y="84" width="96" height="42"/><rect class="u-pn" x="110" y="132" width="96" height="46"/>
       <rect class="u-pn" x="214" y="36" width="110" height="142"/><text class="u-t" x="224" y="56">Čtení zprávy</text><rect class="u-fx" x="222" y="146" width="94" height="24"/><text class="u-d" x="234" y="162">Odpovědět</text>
-    </svg><figcaption>Pošta</figcaption></figure>
-    <figure class="rv"><svg viewBox="0 0 340 190" role="img" aria-label="Kresba grafu spotřeby s volbou období 7, 30 a 90 dní a přepínačem tokeny nebo náklady. Sloupce jsou ilustrační.">
+    </svg></figure>
+    </li>
+    <li>
+      <div class="ui-item rv"><h3><button type="button" class="ui-btn" id="ui-b5" aria-controls="ui-f5"><span class="ui-n" aria-hidden="true">5</span><span>Spotřeba</span></button></h3><p>Tokeny nebo náklady za 7, 30 a 90 dní. Sloupce v kresbě jsou ilustrační.</p></div>
+      <figure class="ui-fig" id="ui-f5"><svg viewBox="0 0 340 190" role="img" aria-label="Kresba grafu spotřeby s volbou období 7, 30 a 90 dní a přepínačem tokeny nebo náklady. Sloupce jsou ilustrační.">
       <rect class="u-bg" width="340" height="190"/>
       <text class="u-a" x="16" y="24">7 dní</text><text class="u-m" x="62" y="24">30 dní</text><text class="u-m" x="114" y="24">90 dní</text><text class="u-t" x="216" y="24">Tokeny</text><text class="u-m" x="268" y="24">Náklady</text>
       <path class="u-fxp" d="M24 176v-40h28v40zM68 176v-62h28v62zM112 176v-30h28v30zM156 176v-84h28v84zM200 176v-52h28v52zM244 176v-112h28v112zM288 176v-70h28v70z"/>
-    </svg><figcaption>Spotřeba, sloupce jsou ilustrační</figcaption></figure>
-    <figure class="rv"><svg viewBox="0 0 340 190" role="img" aria-label="Kresba přihlášení: pole E-mail a Heslo, kód z e-mailu, volba Pamatovat toto zařízení 30 dní a tlačítko Přihlásit.">
+    </svg></figure>
+    </li>
+    <li>
+      <div class="ui-item rv"><h3><button type="button" class="ui-btn" id="ui-b6" aria-controls="ui-f6"><span class="ui-n" aria-hidden="true">6</span><span>Přihlášení</span></button></h3><p>E-mail, heslo a kód z e-mailu. Zařízení si přihlášení může pamatovat 30 dní.</p></div>
+      <figure class="ui-fig" id="ui-f6"><svg viewBox="0 0 340 190" role="img" aria-label="Kresba přihlášení: pole E-mail a Heslo, kód z e-mailu, volba Pamatovat toto zařízení 30 dní a tlačítko Přihlásit.">
       <rect class="u-bg" width="340" height="190"/>
       <text class="u-m" x="60" y="22">E-mail</text><rect class="u-pn" x="60" y="28" width="220" height="24"/>
       <text class="u-m" x="60" y="68">Heslo</text><rect class="u-pn" x="60" y="74" width="220" height="24"/>
       <text class="u-m" x="60" y="114">Kód z e-mailu</text><rect class="u-on" x="60" y="120" width="220" height="24"/>
       <text class="u-m" x="60" y="164">Pamatovat 30 dní</text><rect class="u-fx" x="200" y="150" width="80" height="26"/><text class="u-d" x="214" y="168">Přihlásit</text>
-    </svg><figcaption>Přihlášení</figcaption></figure>
+    </svg></figure>
+    </li>
+  </ol>
   </div>
 </section>
 

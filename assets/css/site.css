@@ -279,10 +279,37 @@ html[data-motion=on] .mel-signal{animation:signal 2.8s ease-in-out infinite}
 .sec-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 18px}
 .sec-head p{color:var(--muted);font-size:.9375rem}
 .ui,.all,.cmp,.faq{padding:var(--gap) var(--margin) 0}
-.ui-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(10px,1.1vw,16px);margin-top:clamp(12px,1.4vw,20px)}
-.ui-grid svg{width:100%;height:auto}
-.ui-grid figcaption{margin-top:4px;font-size:.8125rem;color:var(--muted)}
-.ui-grid text{font-family:Sora,system-ui,sans-serif;font-size:12px;font-weight:600}
+/* Obrazovky: očíslovaný seznam a panel s kresbou. Bez JS zůstanou všechny kresby pod sebou. */
+.ui-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(10px,1.1vw,16px);margin-top:clamp(12px,1.4vw,20px)}
+.ui-item{padding:12px 14px;box-shadow:inset 0 0 0 1px transparent}
+.ui-item h3{font-size:1rem;letter-spacing:-.01em}
+.ui-item p{margin:6px 0 0 40px;font-size:.875rem;line-height:1.45;color:var(--muted)}
+.ui-btn{display:flex;align-items:center;gap:12px;width:100%;padding:0;background:none;border:0;color:var(--ink);font:inherit;text-align:left}
+.ui-n{display:grid;place-items:center;flex:none;width:28px;height:28px;background:var(--surface);color:var(--muted);font-size:.75rem;font-weight:700}
+.ui-fig svg{display:block;width:100%;height:auto}
+.ui-fig text{font-family:Sora,system-ui,sans-serif;font-size:12px;font-weight:600}
+.ui-panel.ready .ui-list{display:block;margin-top:clamp(14px,1.6vw,24px)}
+.ui-panel.ready .ui-list li+li{margin-top:4px}
+.ui-panel.ready .ui-item{cursor:pointer}
+.ui-panel.ready .ui-item:not(.on) p{display:none}
+.ui-panel.ready .ui-item:not(.on) .ui-btn{color:var(--muted)}
+.ui-panel.ready .ui-item:not(.on):hover .ui-btn{color:var(--ink)}
+.ui-panel.ready .ui-btn{cursor:pointer}
+.ui-item.on{box-shadow:inset 0 0 0 2px var(--wire-on)}
+.ui-item.on .ui-n{background:var(--accent);color:var(--on-accent)}
+.ui-panel.ready .ui-fig{margin-top:8px}
+.ui-fig.enter{animation:ui-in .35s cubic-bezier(.4,0,.2,1)}
+@keyframes ui-in{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+html[data-motion=off] .ui-fig.enter{animation:none}
+@media (min-width:1000px){
+  .ui-panel.ready{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,8fr);grid-template-rows:auto repeat(6,auto) 1fr;column-gap:clamp(32px,4vw,64px)}
+  .ui-panel.ready .sec-head{grid-column:1;display:block}
+  .ui-panel.ready .sec-head p{margin-top:12px}
+  .ui-panel.ready .ui-list,.ui-panel.ready .ui-list li{display:contents}
+  .ui-panel.ready .ui-item{grid-column:1;margin-top:4px}
+  .ui-panel.ready .ui-list li:first-child .ui-item{margin-top:clamp(14px,1.6vw,24px)}
+  .ui-panel.ready .ui-fig{grid-column:2;grid-row:1/-1;position:sticky;top:80px;align-self:start;margin:0}
+}
 .u-bg{fill:var(--surface)}
 .u-pn{fill:var(--bg);stroke:var(--line);stroke-width:1}
 .u-on{fill:var(--bg);stroke:var(--wire-on);stroke-width:2}
@@ -335,7 +362,7 @@ details p{padding-bottom:10px;font-size:.9375rem;line-height:1.45;color:var(--mu
   .steps{grid-template-columns:repeat(2,minmax(0,1fr))}
   .facts{grid-template-columns:repeat(3,minmax(0,1fr))}
   .fg{grid-template-columns:minmax(0,1fr)}
-  .ui-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ui-list{grid-template-columns:repeat(2,minmax(0,1fr))}
   .faq-grid{grid-template-columns:minmax(0,1fr)}
   .hero-m{order:0}
   .bento{grid-template-columns:minmax(0,1fr)}
@@ -348,7 +375,7 @@ details p{padding-bottom:10px;font-size:.9375rem;line-height:1.45;color:var(--mu
   html{scroll-padding-top:12px}
   .bar-tools{margin-left:auto}
   .bar-nav{order:3;width:100%;margin:0;flex-wrap:wrap;gap:0 14px;font-size:.8125rem}
-  .steps,.ui-grid{grid-template-columns:minmax(0,1fr)}
+  .steps,.ui-list{grid-template-columns:minmax(0,1fr)}
   .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
   .fgrid{grid-template-columns:minmax(0,1fr)}
   .tb3 tbody th{padding:0 0 4px;border:0}

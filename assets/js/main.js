@@ -288,6 +288,31 @@
   }
 
   // Schéma 3: kroky běhu, jde po nich přejíždět.
+  // Obrazovky: jeden otevřený bod, kresba vedle něj, na telefonu přímo pod ním.
+  function initUiPanel() {
+    var panel = document.querySelector('[data-ui-panel]');
+    if (!panel) return;
+    var rows = Array.prototype.slice.call(panel.querySelectorAll('.ui-list li')).map(function (li) {
+      return { item: li.querySelector('.ui-item'), button: li.querySelector('.ui-btn'), fig: li.querySelector('.ui-fig') };
+    });
+    function show(index, animate) {
+      rows.forEach(function (row, i) {
+        var on = i === index;
+        row.item.classList.toggle('on', on);
+        row.button.setAttribute('aria-expanded', String(on));
+        row.fig.hidden = !on;
+        row.fig.classList.toggle('enter', on && animate);
+      });
+    }
+    rows.forEach(function (row, i) {
+      row.item.addEventListener('click', function () {
+        if (row.fig.hidden) show(i, true);
+      });
+    });
+    show(0, false);
+    panel.classList.add('ready');
+  }
+
   function initGates() {
     var fig = document.getElementById('gates');
     if (!fig) return;
@@ -481,5 +506,6 @@
   initFlow();
   initHub();
   initGates();
+  initUiPanel();
   syncMotion();
 })();
