@@ -348,115 +348,69 @@
     panel.classList.add('ready');
   }
 
-  // Schéma 3: kroky běhu, jde po nich přejíždět. Křivka se počítá ze skutečné velikosti grafu.
+  // Schéma 3: cesta úlohy šesti kroky. Závora u člověka se otevře, až když úloha projde.
   function initGates() {
     var fig = document.getElementById('gates');
     if (!fig) return;
-    var chart = fig.querySelector('[data-chart]');
-    var range = fig.querySelector('[data-range]');
-    var steps = Array.prototype.slice.call(fig.querySelectorAll('[data-steps] > li'));
-    var list = fig.querySelector('[data-steps]');
-    var curveEl = fig.querySelector('[data-curve]');
-    var curveOn = fig.querySelector('[data-curve-on]');
-    var area = fig.querySelector('[data-area]');
-    var clip = fig.querySelector('[data-clip]');
-    var marks = fig.querySelector('[data-marks]');
-    var labels = fig.querySelector('[data-labels]');
-    var human = fig.querySelector('[data-human]');
-    var head = fig.querySelector('[data-head]');
-    var ring = fig.querySelector('[data-head-ring]');
-    var pill = fig.querySelector('[data-pill]');
-    var note = fig.querySelector('[data-gate-note]');
-    var svg = chart.querySelector('svg');
-    var titles = steps.map(function (s) { return s.querySelector('h4').textContent; });
-    var LEVELS = [0.78, 0.68, 0.56, 0.38, 0.26, 0.14];
     var HUMAN = 3;
-    // Polovina jezdce: značky na křivce leží přesně nad jeho polohami.
-    var INSET = 13;
-    var points = [];
-    var lengths = [0];
-    var markEls = [];
-    var labelEls = [];
-    var total = 1;
-    var width = 1;
-    var height = 1;
+    var DWELL = 2;
+    var list = fig.querySelector('[data-steps]');
+    var steps = Array.prototype.slice.call(list.children);
+    function html(tag, cls, parent, text) {
+      var node = document.createElement(tag);
+      node.className = cls;
+      if (text !== undefined) node.textContent = text;
+      if (parent) parent.appendChild(node);
+      return node;
+    }
+    var road = html('div', 'gate-road');
+    var line = html('div', 'gate-line', road);
+    var fill = html('div', 'gate-fill', line);
+    var track = html('div', 'gate-track', road);
+    var token = html('span', 'gate-token', track);
+    track.setAttribute('aria-hidden', 'true');
+    html('span', 'gate-post', road).setAttribute('aria-hidden', 'true');
+    html('span', 'gate-note', road, 'člověk rozhoduje').setAttribute('aria-hidden', 'true');
+    var group = html('div', 'gate-stops', road);
+    group.setAttribute('role', 'group');
+    group.setAttribute('aria-label', 'Kroky běhu');
+    var stops = steps.map(function (step, i) {
+      var button = html('button', 'gate-stop', group);
+      button.type = 'button';
+      html('span', 'num', button, String(i + 1)).setAttribute('aria-hidden', 'true');
+      html('b', '', button, step.querySelector('h4').textContent);
+      html('span', 'gate-short', button, step.querySelector('.gate-do').textContent);
+      button.setAttribute('aria-controls', 'gate-s' + (i + 1));
+      step.id = 'gate-s' + (i + 1);
+      button.addEventListener('click', function () { interact(i); });
+      button.addEventListener('pointerenter', function (event) { if (event.pointerType === 'mouse') interact(i); });
+      button.addEventListener('focus', function () { if (button.matches(':focus-visible')) interact(i); });
+      return button;
+    });
+    fig.insertBefore(road, list);
 
     var pos = 0;
     var target = 0;
-    // První krok přijde krátce po vjezdu do okna, ať schéma nepůsobí zamrzle.
     var wait = 1.4;
     var holdUntil = 0;
-    var DWELL = 2;
 
-    function segment(a, b) {
-      var mx = (a[0] + b[0]) / 2;
-      return 'C' + mx + ' ' + a[1] + ' ' + mx + ' ' + b[1] + ' ' + b[0] + ' ' + b[1];
-    }
-    function layout() {
-      var box = chart.getBoundingClientRect();
-      if (!box.width) return;
-      width = box.width;
-      height = box.height;
-      fitSvg(svg, box);
-      var floor = height - 30;
-      points = LEVELS.map(function (level, i) {
-        return [INSET + i * (width - 2 * INSET) / (LEVELS.length - 1), level * floor];
-      });
-      var d = 'M' + points[0][0] + ' ' + points[0][1];
-      var probe = el('path', {});
-      lengths = [0];
-      for (var i = 1; i < points.length; i++) {
-        d += segment(points[i - 1], points[i]);
-        probe.setAttribute('d', d);
-        lengths.push(probe.getTotalLength());
-      }
-      curveEl.setAttribute('d', d);
-      curveOn.setAttribute('d', d);
-      total = lengths[lengths.length - 1];
-      curveOn.setAttribute('stroke-dasharray', total + ' ' + total);
-      area.setAttribute('d', d + 'L' + points[points.length - 1][0] + ' ' + floor + 'H' + points[0][0] + 'Z');
-      human.setAttribute('d', 'M' + points[HUMAN][0] + ' 22V' + floor);
-      note.style.left = points[HUMAN][0] + 'px';
-      marks.textContent = '';
-      labels.textContent = '';
-      markEls = points.map(function (p) { return el('circle', { class: 'mark', cx: p[0], cy: p[1], r: 4 }, marks); });
-      labelEls = points.map(function (p, i) {
-        var anchor = i === 0 ? 'start' : (i === points.length - 1 ? 'end' : 'middle');
-        var text = el('text', { class: 'gate-lab', x: i === 0 ? 0 : (i === points.length - 1 ? width : p[0]), y: height - 6, 'text-anchor': anchor }, labels);
-        text.textContent = titles[i];
-        return text;
-      });
-      draw();
-    }
-    function lengthAt(p) {
-      var a = Math.floor(p);
-      var b = Math.min(lengths.length - 1, a + 1);
-      return lengths[a] + (lengths[b] - lengths[a]) * (p - a);
-    }
     function draw() {
-      if (!points.length) return;
-      var len = lengthAt(pos);
-      var q = curveEl.getPointAtLength(len);
-      head.setAttribute('cx', q.x);
-      head.setAttribute('cy', q.y);
-      ring.setAttribute('cx', q.x);
-      ring.setAttribute('cy', q.y);
-      curveOn.setAttribute('stroke-dashoffset', total - len);
-      clip.setAttribute('width', q.x);
-      markEls.forEach(function (m, i) { m.classList.toggle('on', i <= pos + 0.02); });
-      labelEls.forEach(function (l, i) { l.classList.toggle('on', i === target); });
-      var half = pill.offsetWidth / 2;
-      pill.style.left = clamp(q.x, half, Math.max(half, width - half)) + 'px';
-      pill.style.top = q.y + 'px';
+      var p = pos / (steps.length - 1);
+      fill.style.transform = 'scaleX(' + p.toFixed(4) + ')';
+      token.style.setProperty('--p', p.toFixed(4));
+      stops.forEach(function (stop, i) { stop.classList.toggle('done', i <= pos + 0.02); });
+      road.classList.toggle('pass', pos > HUMAN + 0.02);
     }
     function show(index, announce) {
+      var changed = index !== target;
       target = index;
-      range.value = String(index);
-      range.setAttribute('aria-valuetext', titles[index]);
       list.setAttribute('aria-live', announce ? 'polite' : 'off');
-      steps.forEach(function (s, i) { s.hidden = i !== index; });
-      pill.textContent = titles[index];
-      labelEls.forEach(function (l, i) { l.classList.toggle('on', i === index); });
+      steps.forEach(function (step, i) { step.hidden = i !== index; });
+      stops.forEach(function (stop, i) { stop.setAttribute('aria-pressed', String(i === index)); });
+      road.classList.toggle('at-human', index === HUMAN);
+      if (changed && motionOn() && steps[index].animate) {
+        steps[index].animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 300, easing: 'cubic-bezier(.22,1,.36,1)' });
+      }
     }
     function interact(index) {
       holdUntil = performance.now() + 9000;
@@ -464,20 +418,18 @@
       show(index, true);
       if (!motionOn()) { pos = index; draw(); }
     }
-    range.addEventListener('input', function () { interact(Number(range.value)); });
-    chart.addEventListener('pointermove', function (event) {
-      var x = event.clientX - svg.getBoundingClientRect().left;
-      var best = 0;
-      points.forEach(function (p, i) { if (Math.abs(p[0] - x) < Math.abs(points[best][0] - x)) best = i; });
-      if (best !== target || event.pointerType !== 'mouse') interact(best);
-      holdUntil = performance.now() + 9000;
+    group.addEventListener('keydown', function (event) {
+      var at = stops.indexOf(document.activeElement);
+      if (at < 0) return;
+      var map = { ArrowRight: Math.min(at + 1, stops.length - 1), ArrowLeft: Math.max(at - 1, 0), ArrowDown: Math.min(at + 1, stops.length - 1), ArrowUp: Math.max(at - 1, 0), Home: 0, End: stops.length - 1 };
+      if (map[event.key] === undefined) return;
+      event.preventDefault();
+      stops[map[event.key]].focus();
+      interact(map[event.key]);
     });
     root.classList.add('gates-ready');
     show(0, false);
-    layout();
-    if ('ResizeObserver' in window) new ResizeObserver(layout).observe(chart);
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
-    window.addEventListener('load', layout);
+    draw();
     register(fig, {
       tick: function (dt, now) {
         var diff = target - pos;
@@ -490,9 +442,10 @@
         }
         if (now > holdUntil) {
           wait += dt;
-          if (wait >= DWELL) {
+          // U člověka úloha počká déle: právě tady se běh zastavuje.
+          if (wait >= (target === HUMAN ? DWELL * 1.6 : DWELL)) {
             wait = 0;
-            if (target === points.length - 1) { pos = 0; show(0, false); } else { show(target + 1, false); }
+            show(target === steps.length - 1 ? 0 : target + 1, false);
           }
         }
       },
@@ -503,15 +456,20 @@
   // Zobrazení při vjezdu do okna, po částech sekce.
   function initReveal() {
     var items = Array.prototype.slice.call(document.querySelectorAll('.rv'));
+    root.classList.add('rv-on');
     if (!('IntersectionObserver' in window)) { items.forEach(function (i) { i.classList.add('in'); }); return; }
     var io = new IntersectionObserver(function (entries) {
       var n = 0;
       entries.forEach(function (entry) {
         if (!entry.isIntersecting) return;
         var own = entry.target.dataset.delay;
-        entry.target.style.transitionDelay = (own !== undefined ? own : n++ * 70) + 'ms';
-        entry.target.classList.add('in');
-        io.unobserve(entry.target);
+        var delay = own !== undefined ? Number(own) : Math.min(n++, 5) * 70;
+        var target = entry.target;
+        target.style.transitionDelay = delay + 'ms';
+        target.classList.add('in');
+        io.unobserve(target);
+        // Po vjezdu reaguje prvek na najetí hned, bez zpoždění vjezdu.
+        setTimeout(function () { target.style.transitionDelay = ''; target.classList.add('rv-done'); }, delay + 520);
       });
     }, { threshold: 0.08, rootMargin: '0px 0px -4% 0px' });
     items.forEach(function (i) { io.observe(i); });
@@ -822,6 +780,7 @@
         if (!n.counts[k]) return;
         var part = html('span', 'bar-' + k, bar);
         part.style.flexGrow = String(n.counts[k]);
+        if (animating() && part.animate) part.animate([{ transform: 'scaleX(0)', opacity: 0.4 }, { transform: 'none', opacity: 1 }], { duration: 480, delay: 120, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' });
         var wrap = html('span', 'orb-state', states);
         html('span', 'st st-' + k, wrap, STATE_NAMES[k]);
         html('b', '', wrap, String(n.counts[k]));
@@ -884,6 +843,7 @@
         choose(first);
       } else {
         render(true);
+        arrive();
       }
     }
 
@@ -1110,8 +1070,17 @@
       }, { rootMargin: '-40% 0px -55% 0px' });
       Array.prototype.slice.call(document.querySelectorAll('main > section[id]')).forEach(function (s) { spy.observe(s); });
     }
-    function onScroll() { bar.classList.toggle('scrolled', window.scrollY > 8); }
-    window.addEventListener('scroll', onScroll, { passive: true });
+    var prog = bar.querySelector('.bar-prog');
+    var queued = false;
+    function onScroll() {
+      queued = false;
+      bar.classList.toggle('scrolled', window.scrollY > 8);
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      if (prog) prog.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, window.scrollY / max) : 0).toFixed(4) + ')';
+    }
+    window.addEventListener('scroll', function () {
+      if (!queued) { queued = true; requestAnimationFrame(onScroll); }
+    }, { passive: true });
     onScroll();
 
     var toggle = document.getElementById('menu-toggle');

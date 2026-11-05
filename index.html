@@ -25,14 +25,15 @@
 <link rel="apple-touch-icon" href="/melaris-web-nahled/apple-touch-icon.png">
 <link rel="preload" href="/melaris-web-nahled/assets/fonts/sora-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/melaris-web-nahled/assets/fonts/sora-latin-ext-wght.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/melaris-web-nahled/assets/css/site.css?v=20261105g">
-<script src="/melaris-web-nahled/assets/js/early.js?v=20261105g"></script>
-<script src="/melaris-web-nahled/assets/js/main.js?v=20261105g" defer></script>
+<link rel="stylesheet" href="/melaris-web-nahled/assets/css/site.css?v=20261105h">
+<script src="/melaris-web-nahled/assets/js/early.js?v=20261105h"></script>
+<script src="/melaris-web-nahled/assets/js/main.js?v=20261105h" defer></script>
 </head>
 <body>
 <a class="skip" href="#obsah">Přeskočit na obsah</a>
 
 <header class="bar">
+  <span class="bar-prog" aria-hidden="true"></span>
   <a class="bar-logo" href="#obsah" aria-label="Melaris, začátek stránky">
     <svg viewBox="0 0 210 44" fill="none" aria-hidden="true" focusable="false">
       <defs><linearGradient id="ruby-bar" x1="3" y1="5" x2="43" y2="39" gradientUnits="userSpaceOnUse"><stop stop-color="#f21b68"/><stop offset=".5" stop-color="#d91b60"/><stop offset="1" stop-color="#85254e"/></linearGradient></defs>
@@ -256,33 +257,17 @@
   <article class="chap chap-stack" aria-labelledby="f3-title">
     <div class="chap-text rv">
       <div class="chap-title"><span class="num" aria-hidden="true">3</span><h3 id="f3-title">Pojistky v běhu</h3></div>
-      <p>Přejeď po křivce nebo použij posuvník a šipky. U každého kroku je napsané, co platí a co je zatím vypnuté.</p>
+      <p>Vyber krok na cestě úlohy nebo použij šipky. U každého kroku je napsané, co platí a co je zatím vypnuté.</p>
     </div>
     <div class="panel rv">
       <div class="schema gates" id="gates">
-        <div class="gates-chart" data-chart>
-          <svg aria-hidden="true" focusable="false">
-            <clipPath id="gate-clip"><rect data-clip x="0" y="0" width="40" height="100%"/></clipPath>
-            <path class="gate-human" data-human/>
-            <path class="area" data-area clip-path="url(#gate-clip)"/>
-            <path class="curve" data-curve/>
-            <path class="curve-on" data-curve-on/>
-            <g data-marks></g>
-            <g data-labels></g>
-            <circle class="head-ring" data-head-ring r="15"/>
-            <circle class="head" data-head r="6"/>
-          </svg>
-          <span class="gate-note" data-gate-note>člověk rozhoduje</span>
-          <span class="pill" data-pill>Zadání</span>
-        </div>
-        <label class="range-wrap"><span class="vh">Krok běhu</span><input type="range" min="0" max="5" step="1" value="0" data-range></label>
         <ol class="gate-steps" data-steps aria-live="off">
-          <li><h4>Zadání</h4><p>Běh se založí a zapíše si snímek oprávnění: režim, nástroje, síť. Když později navazuješ, uvidíš rozdíl.</p></li>
-          <li><h4>Povinný skill</h4><p>Před načtením skillu model nedostane žádný jiný nástroj. Po dvou neúspěšných opravách běh skončí jako nedokončený.</p></li>
-          <li><h4>Oddělený běh</h4><p>Úloha může pracovat ve vlastní kopii na větvi <code>melaris/run-…</code>. Serverový režim v kontejneru bez sítě je napsaný, ale zatím vypnutý a v přejímce.</p></li>
-          <li><h4>Schválení člověkem</h4><p>Příkazy čekají na souhlas. Kritickou akci neschválí sám zadavatel, ani když je vlastník. Produkce a finance jsou odmítnuté.</p></li>
-          <li><h4>Audit</h4><p>Schválení, změny oprávnění a pauzy jdou do řetězeného záznamu s HMAC. Příkaz <code>melaris audit</code> ho ověří a nahlásí přerušení.</p></li>
-          <li><h4>Výsledek</h4><p>Změny vidíš jako diff a sloučíš je, nebo zahodíš. Nedokončená práce se neoznačí jako hotová.</p></li></ol>
+          <li><h4>Zadání</h4><p class="gate-do">Zapíše: oprávnění, nástroje a síť běhu.</p><p>Běh se založí a zapíše si snímek oprávnění: režim, nástroje, síť. Když později navazuješ, uvidíš rozdíl.</p></li>
+          <li><h4>Povinný skill</h4><p class="gate-do">Zastaví: model, který nemá načtený skill.</p><p>Před načtením skillu model nedostane žádný jiný nástroj. Po dvou neúspěšných opravách běh skončí jako nedokončený.</p></li>
+          <li><h4>Oddělený běh</h4><p class="gate-do">Oddělí: práci do vlastní kopie na větvi.</p><p>Úloha může pracovat ve vlastní kopii na větvi <code>melaris/run-…</code>. Serverový režim v kontejneru bez sítě je napsaný, ale zatím vypnutý a v přejímce.</p></li>
+          <li><h4>Schválení člověkem</h4><p class="gate-do">Zastaví: příkaz, dokud člověk nesouhlasí.</p><p>Příkazy čekají na souhlas. Kritickou akci neschválí sám zadavatel, ani když je vlastník. Produkce a finance jsou odmítnuté.</p></li>
+          <li><h4>Audit</h4><p class="gate-do">Zaznamená: schválení, změny oprávnění a pauzy.</p><p>Schválení, změny oprávnění a pauzy jdou do řetězeného záznamu s HMAC. Příkaz <code>melaris audit</code> ho ověří a nahlásí přerušení.</p></li>
+          <li><h4>Výsledek</h4><p class="gate-do">Pustí: jen to, co sloučíš.</p><p>Změny vidíš jako diff a sloučíš je, nebo zahodíš. Nedokončená práce se neoznačí jako hotová.</p></li></ol>
       </div>
     </div>
   </article>
