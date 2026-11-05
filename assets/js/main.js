@@ -578,8 +578,6 @@
 
     var groups = Array.prototype.slice.call(box.querySelectorAll('.fg'));
     var orb = html('div', 'orb');
-    var wire = el('svg', { class: 'orb-wire', 'aria-hidden': 'true', focusable: 'false' }, orb);
-    var wirePath = el('path', {}, wire);
 
     // Přepínač stavu s počty.
     var sw = html('div', 'orb-sw', orb);
@@ -682,7 +680,7 @@
         g.addEventListener('pointerleave', hideTip);
         g.addEventListener('focus', function () { showTip(pt); focusHold = true; });
         g.addEventListener('blur', function () { hideTip(); focusHold = false; });
-        g.addEventListener('click', function () { rotating = false; choose(i); });
+        g.addEventListener('click', function () { choose(i); });
         it.li.addEventListener('pointerenter', function () { pt.g.classList.add('hot'); });
         it.li.addEventListener('pointerleave', function () { pt.g.classList.remove('hot'); });
       });
@@ -691,7 +689,7 @@
     dotsSvg.addEventListener('keydown', function (event) {
       var at = points.findIndex(function (p) { return p.g === document.activeElement; });
       if (at < 0) return;
-      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); rotating = false; choose(points[at].node); return; }
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); choose(points[at].node); return; }
       var step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
       if (!step) return;
       event.preventDefault();
@@ -704,7 +702,6 @@
     var filter = 'all';
     var active = 0;
     var angle = 0;
-    var rotating = true;
     var radius = 200;
     var outer = 280;
     var compact = false;
@@ -713,8 +710,6 @@
     var hoverHold = false;
     var slotX = 0;
     var slotY = 0;
-    var sysX = 0;
-    var sysY = 0;
     var FLIGHT = 0.6;
     var widget = null;
 
@@ -755,19 +750,6 @@
       var gap = orbitPos(active);
       gapEl.style.transform = 'translate(' + gap.x.toFixed(2) + 'px,' + gap.y.toFixed(2) + 'px)';
       dotsG.setAttribute('transform', 'rotate(' + angle.toFixed(3) + ')');
-      drawWire();
-    }
-    function drawWire() {
-      var n = nodes[active];
-      var cr = compact ? 46 : 62;
-      var dist = Math.max(1, Math.sqrt(n.x * n.x + n.y * n.y));
-      var ax = sysX + n.x / dist * cr;
-      var ay = sysY + n.y / dist * cr;
-      var bx = sysX + n.x;
-      var by = sysY + n.y;
-      var mx = (ax + bx) / 2 + (by - ay) * 0.12;
-      var my = (ay + by) / 2 - (bx - ax) * 0.12;
-      wirePath.setAttribute('d', 'M' + ax.toFixed(1) + ' ' + ay.toFixed(1) + 'Q' + mx.toFixed(1) + ' ' + my.toFixed(1) + ' ' + bx.toFixed(1) + ' ' + by.toFixed(1));
     }
     function layout() {
       var width = orb.clientWidth;
@@ -784,16 +766,10 @@
       var half = Math.min(w, h) / 2;
       outer = half - (compact ? 8 : 14);
       radius = outer * (compact ? 0.72 : 0.71);
-      var oRect = orb.getBoundingClientRect();
       var sRect = stage.getBoundingClientRect();
-      sysX = sRect.left - oRect.left + w / 2;
-      sysY = sRect.top - oRect.top + h / 2;
       sys.style.left = (w / 2) + 'px';
       sys.style.top = (h / 2) + 'px';
       track.style.width = track.style.height = (radius * 2) + 'px';
-      wire.setAttribute('viewBox', '0 0 ' + oRect.width + ' ' + oRect.height);
-      wire.setAttribute('width', oRect.width);
-      wire.setAttribute('height', oRect.height);
       var size = (outer + 16) * 2;
       dotsSvg.setAttribute('viewBox', (-size / 2) + ' ' + (-size / 2) + ' ' + size + ' ' + size);
       dotsSvg.style.width = dotsSvg.style.height = size + 'px';
@@ -912,22 +888,20 @@
     }
 
     nodes.forEach(function (n, i) {
-      n.button.addEventListener('click', function () { rotating = false; choose(i); });
+      n.button.addEventListener('click', function () { hoverHold = false; choose(i); });
       n.button.addEventListener('focus', function () { focusHold = n.button.matches(':focus-visible'); });
       n.button.addEventListener('blur', function () { focusHold = false; });
     });
-    select.addEventListener('change', function () { rotating = false; choose(Number(select.value)); });
-    stage.addEventListener('click', function (event) {
-      if (!event.target.closest('.orb-node') && !event.target.closest('.orb-pt')) rotating = true;
-    });
+    select.addEventListener('change', function () { choose(Number(select.value)); });
     stage.addEventListener('pointerover', function (event) {
-      if (event.pointerType === 'mouse' && event.target.closest('.orb-node')) hoverHold = true;
+      // Najetí na kuličku na dráze ji podrží, aby šla trefit; zaparkovaná v bločku orbitu nebrzdí.
+      if (event.pointerType === 'mouse' && event.target.closest('.orb-node') && !event.target.closest('.parked')) hoverHold = true;
     });
     stage.addEventListener('pointerout', function (event) {
       if (event.pointerType === 'mouse' && event.target.closest('.orb-node')) hoverHold = false;
     });
     orb.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape') { rotating = true; hideTip(); }
+      if (event.key === 'Escape') hideTip();
     });
 
     render(false);
@@ -952,7 +926,7 @@
           moving = true;
           if (n.fly.t === 1) n.fly = null;
         });
-        if (rotating && !focusHold && !hoverHold) {
+        if (!focusHold && !hoverHold) {
           // 0,3° po 50 ms jako v předloze, jen plynule po snímcích.
           angle = (angle + 6 * dt) % 360;
           moving = true;

@@ -409,8 +409,6 @@ html[data-motion=off] .em *{animation:none!important;transition:none!important}
 .vse-browser{margin-top:20px}
 /* Orbita: kuličky jsou kategorie, prstenec je poměr stavů, body na vnější dráze jsou funkce. */
 .orb{--st-h:var(--accent);--st-t:var(--muted);--st-v:var(--muted);position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);grid-template-rows:auto 1fr auto;column-gap:40px}
-.orb-wire{position:absolute;left:0;top:0;z-index:0;overflow:visible;max-width:none;pointer-events:none}
-.orb-wire path{fill:none;stroke:var(--accent);stroke-width:1.5;opacity:.5}
 .orb-sw{grid-column:1;grid-row:1;justify-self:start;display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;border-radius:24px;background:var(--surface);position:relative;z-index:1}
 .flt{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:4px 13px;background:none;border:0;border-radius:20px;color:var(--ink);font:500 .8125rem/1.2 Sora,system-ui,sans-serif;cursor:pointer;transition:background .18s,color .18s}
 .flt b{font-weight:700;font-variant-numeric:tabular-nums;color:var(--muted);transition:color .18s}
