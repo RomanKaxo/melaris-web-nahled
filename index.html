@@ -25,9 +25,9 @@
 <link rel="apple-touch-icon" href="/melaris-web-nahled/apple-touch-icon.png">
 <link rel="preload" href="/melaris-web-nahled/assets/fonts/sora-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/melaris-web-nahled/assets/fonts/sora-latin-ext-wght.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/melaris-web-nahled/assets/css/site.css?v=20261105c">
-<script src="/melaris-web-nahled/assets/js/early.js?v=20261105c"></script>
-<script src="/melaris-web-nahled/assets/js/main.js?v=20261105c" defer></script>
+<link rel="stylesheet" href="/melaris-web-nahled/assets/css/site.css?v=20261105f">
+<script src="/melaris-web-nahled/assets/js/early.js?v=20261105f"></script>
+<script src="/melaris-web-nahled/assets/js/main.js?v=20261105f" defer></script>
 </head>
 <body>
 <a class="skip" href="#obsah">Přeskočit na obsah</a>
@@ -46,23 +46,28 @@
       <path fill="#f21b68" d="m203 27 4 4-4 4-4-4 4-4Z"/>
     </svg>
   </a>
-  <nav class="bar-nav" aria-label="Sekce stránky">
-    <a href="#proc">Proč</a>
-    <a href="#jak">Jak funguje</a>
-    <a href="#funkce">Funkce</a>
-    <a href="#srovnani">Srovnání</a>
-    <a href="#stav">Stav</a>
-    <a href="#otazky">Otázky</a>
-  </nav>
-  <div class="bar-tools">
-    <button class="icon-btn" type="button" id="motion-toggle" aria-pressed="false" aria-label="Zastavit animace" title="Zastavit animace">
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="i-pause" d="M8 5v14M16 5v14"/><path class="i-play" d="M8 5l11 7-11 7Z"/></svg>
-    </button>
-    <button class="icon-btn" type="button" id="theme-toggle" aria-label="Přepnout světlý a tmavý vzhled" title="Přepnout světlý a tmavý vzhled">
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8"/><path class="half" d="M12 4a8 8 0 0 1 0 16Z"/></svg>
-    </button>
-    <a class="btn btn-small" href="https://test.melaris.cz">Přihlásit se</a>
+  <div class="bar-menu" id="bar-menu">
+    <nav class="bar-nav" aria-label="Sekce stránky">
+      <a href="#proc">Proč</a>
+      <a href="#jak">Jak funguje</a>
+      <a href="#funkce">Funkce</a>
+      <a href="#srovnani">Srovnání</a>
+      <a href="#stav">Stav</a>
+      <a href="#otazky">Otázky</a>
+    </nav>
+    <div class="bar-tools">
+      <button class="icon-btn" type="button" id="motion-toggle" aria-pressed="false" aria-label="Zastavit animace" title="Zastavit animace">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="i-pause" d="M8 5v14M16 5v14"/><path class="i-play" d="M8 5l11 7-11 7Z"/></svg>
+      </button>
+      <button class="icon-btn" type="button" id="theme-toggle" aria-label="Přepnout světlý a tmavý vzhled" title="Přepnout světlý a tmavý vzhled">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8"/><path class="half" d="M12 4a8 8 0 0 1 0 16Z"/></svg>
+      </button>
+    </div>
   </div>
+  <a class="btn btn-small" href="https://test.melaris.cz">Přihlásit se</a>
+  <button class="icon-btn menu-btn" type="button" id="menu-toggle" aria-expanded="false" aria-controls="bar-menu" aria-label="Otevřít menu">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="i-open" d="M4 7h16M4 12h16M4 17h16"/><path class="i-close" d="M6 6l12 12M18 6 6 18"/></svg>
+  </button>
 </header>
 
 <main id="obsah" tabindex="-1">
@@ -281,7 +286,7 @@
     <li>
       <h3><button type="button" class="ui-btn rv rv-s" id="ui-b1" aria-controls="ui-f1"><span class="ui-n" aria-hidden="true">1</span><span class="ui-name">Editor chatu</span></button></h3>
       <p class="ui-desc">Napíšeš zadání a vybereš režim: Mel + tým, běžná odpověď, nebo plán a kontrola.</p>
-      <figure class="ui-fig" id="ui-f1"><svg viewBox="0 0 520 390" role="img" aria-label="Kresba editoru chatu s popiskem Tvoje zadání, třemi režimy práce a tlačítkem Odeslat."><use href="#ui-chrome"/><use href="#ui-win"/><use href="#ui-rail"/><circle class="u-rail-on" cx="68" cy="96" r="14"/><use href="#ui-rail-icons"/><text class="u-m u-s" x="100" y="66">Chat</text><text class="u-h" x="100" y="96">Oprava přihlášení</text><text class="u-a u-s" x="506" y="96" text-anchor="end">Probíhá</text><rect class="u-me" x="258" y="106" width="250" height="44" rx="10"/><text class="u-t" x="270" y="124">Oprav přihlašovací formulář</text><text class="u-t" x="270" y="140">a ověř ho v prohlížeči</text><use href="#m-mark" transform="translate(100 158) scale(.42) translate(-3 -5)"/><text class="u-t u-b" x="124" y="170">Mel</text><text class="u-t" x="124" y="187">Iris navrhne formulář, Kern upraví kód.</text><circle class="u-av" cx="109" cy="206" r="8"/><text class="u-t u-b" x="124" y="203">Kern</text><text class="u-t" x="124" y="219">Upravuji soubor prihlaseni.html.</text><text class="u-m" x="124" y="235">Do jednoho souboru zapisují po jednom.</text><rect class="u-pn" x="100" y="248" width="408" height="112" rx="10"/><text class="u-m u-s" x="114" y="268">Tvoje zadání</text><text class="u-t" x="114" y="288">Přidej i hlášku o špatném kódu</text><rect class="u-fx" x="306" y="277" width="2" height="15"/><rect class="u-on" x="114" y="300" width="76" height="24" rx="12"/><text class="u-a u-s" x="125" y="316">Mel + tým</text><rect class="u-pn" x="196" y="300" width="108" height="24" rx="12"/><text class="u-t u-s" x="207" y="316">Běžná odpověď</text><rect class="u-pn" x="310" y="300" width="104" height="24" rx="12"/><text class="u-t u-s" x="321" y="316">Plán a kontrola</text><text class="u-m u-s" x="114" y="348">Projekt · Další volby</text><rect class="u-fx" x="434" y="328" width="62" height="26" rx="8"/><text class="u-d" x="443" y="345">Odeslat</text><use href="#ui-fade"/></svg></figure>
+      <figure class="ui-fig" id="ui-f1"><svg viewBox="0 0 520 390" role="img" aria-label="Kresba editoru chatu s popiskem Tvoje zadání, třemi režimy práce a tlačítkem Odeslat."><use href="#ui-chrome"/><use href="#ui-win"/><use href="#ui-rail"/><circle class="u-rail-on" cx="68" cy="96" r="14"/><use href="#ui-rail-icons"/><text class="u-m u-s" x="100" y="66">Chat</text><text class="u-h" x="100" y="96">Oprava přihlášení</text><text class="u-a u-s" x="506" y="96" text-anchor="end">Probíhá</text><rect class="u-me" x="258" y="106" width="250" height="44" rx="10"/><text class="u-t" x="270" y="124">Oprav přihlašovací formulář</text><text class="u-t" x="270" y="140">a ověř ho v prohlížeči</text><svg x="100" y="157" width="18" height="18" viewBox="0 0 16 16"><path d="M1.00 4.00Q1 3 2.00 3.00L5.50 3.00Q6 3 6.40 3.30L7.60 4.20Q8 4.5 8.31 4.11L9.69 2.39Q10 2 10.50 2.00L14.00 2.00Q15 2 15.00 3.00L15.00 14.20Q15 15 14.20 15.00L10.50 15.00Q10 15 9.84 14.53L9.13 12.38Q9 12 8.60 12.00L7.40 12.00Q7 12 6.87 12.38L6.16 14.53Q6 15 5.50 15.00L1.80 15.00Q1 15 1.00 14.20Z" fill="#F21B68"/><rect x="2" y="5" width="12" height="7" rx="1.6" fill="#171522"/><rect x="3" y="6" width="4" height="4" rx="1" fill="#FAF6FF"/><rect x="4" y="7" width="2" height="2" rx="0.5" fill="#171522"/><rect x="9" y="6" width="4" height="4" rx="1" fill="#FAF6FF"/><rect x="10" y="7" width="2" height="2" rx="0.5" fill="#171522"/></svg><text class="u-t u-b" x="124" y="170">Mel</text><text class="u-t" x="124" y="187">Iris navrhne formulář, Kern upraví kód.</text><circle class="u-av" cx="109" cy="206" r="8"/><text class="u-t u-b" x="124" y="203">Kern</text><text class="u-t" x="124" y="219">Upravuji soubor prihlaseni.html.</text><text class="u-m" x="124" y="235">Do jednoho souboru zapisují po jednom.</text><rect class="u-pn" x="100" y="248" width="408" height="112" rx="10"/><text class="u-m u-s" x="114" y="268">Tvoje zadání</text><text class="u-t" x="114" y="288">Přidej i hlášku o špatném kódu</text><rect class="u-fx" x="306" y="277" width="2" height="15"/><rect class="u-on" x="114" y="300" width="76" height="24" rx="12"/><text class="u-a u-s" x="125" y="316">Mel + tým</text><rect class="u-pn" x="196" y="300" width="108" height="24" rx="12"/><text class="u-t u-s" x="207" y="316">Běžná odpověď</text><rect class="u-pn" x="310" y="300" width="104" height="24" rx="12"/><text class="u-t u-s" x="321" y="316">Plán a kontrola</text><text class="u-m u-s" x="114" y="348">Projekt · Další volby</text><rect class="u-fx" x="434" y="328" width="62" height="26" rx="8"/><text class="u-d" x="443" y="345">Odeslat</text><use href="#ui-fade"/></svg></figure>
     </li>
     <li>
       <h3><button type="button" class="ui-btn rv rv-s" id="ui-b2" aria-controls="ui-f2"><span class="ui-n" aria-hidden="true">2</span><span class="ui-name">Plán a změny v chatu</span></button></h3>
@@ -487,27 +492,7 @@
 
 <section class="mel" id="mel" aria-labelledby="mel-title">
   <div class="mel-art rv">
-    <svg id="mel-avatar" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-      <defs>
-        <linearGradient id="mel-shell-paint" x1="20" y1="17" x2="77" y2="87" gradientUnits="userSpaceOnUse"><stop stop-color="#5d4d76"/><stop offset=".48" stop-color="#352d46"/><stop offset="1" stop-color="#252130"/></linearGradient>
-        <linearGradient id="mel-accent-paint" x1="28" y1="17" x2="65" y2="33" gradientUnits="userSpaceOnUse"><stop stop-color="#f21b68"/><stop offset=".58" stop-color="#d91b60"/><stop offset="1" stop-color="#85254e"/></linearGradient>
-        <linearGradient id="mel-face-paint" x1="27" y1="36" x2="68" y2="76" gradientUnits="userSpaceOnUse"><stop stop-color="#24202f"/><stop offset="1" stop-color="#15131e"/></linearGradient>
-      </defs>
-      <g class="mel-body">
-        <path fill="url(#mel-shell-paint)" stroke="#9c80be" stroke-width="2.2" stroke-linejoin="round" d="M24 19 Q50 9 76 22 Q88 30 86 56 L83 71 Q80 87 62 88 L34 87 Q17 84 15 68 L13 45 Q12 27 24 19Z"/>
-        <path fill="#252130" d="M80 31 Q88 47 81 70 Q78 84 62 85 L35 84 Q23 82 19 73 Q29 80 42 79 L64 79 Q77 77 79 63Z"/>
-        <path fill="none" stroke="#c7b1e0" stroke-width="2.3" stroke-linecap="round" d="M19 41 Q18 30 25 25"/>
-        <path fill="url(#mel-accent-paint)" d="M25 21 Q46 12 71 22 L64 31 Q44 23 25 31Z"/>
-        <path fill="none" stroke="#ff88b6" stroke-width="1.6" stroke-linecap="round" d="M28 23 Q44 17 63 22"/>
-        <rect fill="url(#mel-face-paint)" stroke="#554167" stroke-width="2.2" x="22" y="35" width="56" height="41" rx="18"/>
-        <path fill="none" stroke="#746284" stroke-width="1.5" stroke-linecap="round" d="M29 44 Q31 39 37 39"/>
-        <g class="mel-eyes" fill="none" stroke="#faf6ff" stroke-width="9" stroke-linecap="round"><path d="M38 49 Q38 52 38 55"/><path d="M62 49 Q62 52 62 55"/></g>
-        <path fill="none" stroke="#b96a98" stroke-width="2.5" stroke-linecap="round" opacity=".65" d="M31 63 H36 M64 63 H69"/>
-        <path fill="none" stroke="#faf6ff" stroke-width="3.6" stroke-linecap="round" d="M44 64 Q50 72 57 64"/>
-        <circle class="mel-signal-ring" fill="#32263f" stroke="#9c80be" stroke-width="1.4" cx="76" cy="24" r="6.2"/>
-        <circle class="mel-signal" fill="#f7b3d5" cx="76" cy="24" r="4.1"/>
-      </g>
-    </svg>
+    <button type="button" class="mel-btn" id="mel-btn" aria-label="Mel"><svg id="mel-avatar" class="em" data-s="idle" data-var="stit" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><defs><clipPath id="em1l"><rect x="17.5" y="23.3" width="13.4" height="13.4" rx="4.556"/></clipPath><clipPath id="em1p"><rect x="33.099999999999994" y="23.3" width="13.4" height="13.4" rx="4.556"/></clipPath></defs><g class="koren"><g class="kusy"><polygon class="kus kus1" points="32,-2 36.4,2 32,6 27.6,2" fill="#F21B68"/><polygon class="kus kus2" points="34,-9 38.4,-5 34,-1 29.6,-5" fill="#F21B68"/><polygon class="kus kus3" points="32,-16 36.4,-12 32,-8 27.6,-12" fill="#FF92BA"/></g><g class="jisk" fill="#FF92BA"><polygon points="4,6 7,10 4,14 1,10"/><polygon points="60,3 64,8 60,13 56,8"/><polygon class="j3" points="32,-8 35,-4 32,0 29,-4"/></g><g class="lek" stroke="#FF92BA" stroke-width="2.6" stroke-linecap="round" fill="none"><path d="M6 1l-2-6M65.8 0l3-6M32 -5v-7"/></g><g class="mysl" fill="#FF92BA"><circle cx="54.8" cy="4" r="1.6"/><circle cx="59.8" cy="-2" r="2.3"/><circle cx="65.8" cy="-9" r="3.2"/></g><g class="tiky" stroke="#FF92BA" stroke-width="2.2" stroke-linecap="round" fill="none"><path d="M51.86 58l5-1.5M51.86 53l4.5-3"/></g><g class="nohy"><path class="noha nl" fill="#F21B68" d="M5.06 39.00Q5.2 37 7.20 37.00L30.00 37.00Q30 37 30.00 37.00L30.00 47.00Q30 47 30.00 47.00L27.54 56.14Q26.5 60 22.50 60.00L8.60 60.00Q3.6 60 3.95 55.01Z"/><path class="noha np" fill="#F21B68" d="M58.94 39.00Q58.8 37 56.80 37.00L34.00 37.00Q34 37 34.00 37.00L34.00 47.00Q34 47 34.00 47.00L36.46 56.14Q37.5 60 41.50 60.00L55.40 60.00Q60.4 60 60.05 55.01Z"/></g><g class="hlava"><path class="trup" fill="#F21B68" d="M4.27 17.99Q4 11 10.93 10.01L21.54 8.49Q25 8 27.75 10.16L28.85 11.03Q32 13.5 34.93 10.78L36.44 9.38Q39 7 42.48 7.33L53.03 8.34Q60 9 59.74 16.00L58.78 42.00Q58.6 47 53.60 47.00L10.40 47.00Q5.4 47 5.21 42.00Z"/><rect class="deska" x="11.5" y="18.5" width="41" height="26" rx="10" fill="#171522"/><g class="oci"><g class="oko oko-l" clip-path="url(#em1l)"><rect x="17.5" y="23.3" width="13.4" height="13.4" rx="4.556" fill="#FAF6FF"/><g class="zor"><circle cx="24.2" cy="30" r="4.4" fill="#171522"/><circle class="odl" cx="25.695999999999998" cy="28.416" r="1.1440000000000001" fill="#FAF6FF"/></g><rect class="vk" x="17" y="22.8" width="14.4" height="14.4" fill="#171522"/></g><g class="oko oko-p" clip-path="url(#em1p)"><rect x="33.099999999999994" y="23.3" width="13.4" height="13.4" rx="4.556" fill="#FAF6FF"/><g class="zor"><circle cx="39.8" cy="30" r="4.4" fill="#171522"/><circle class="odl" cx="41.296" cy="28.416" r="1.1440000000000001" fill="#FAF6FF"/></g><rect class="vk" x="32.599999999999994" y="22.8" width="14.4" height="14.4" fill="#171522"/></g></g><g class="radost" stroke="#FAF6FF" stroke-width="2.6" stroke-linecap="round" fill="none"><path d="M18.84 32.144Q24.2 24.104 29.56 32.144"/><path d="M34.44 32.144Q39.8 24.104 45.16 32.144"/></g><g class="mu" stroke="#FAF6FF" stroke-width="1.9" stroke-linecap="round" fill="none"><path class="u-s" d="M28.6 40q3.4 2.5 6.8 0"/><path class="u-n" d="M29.8 40.6h4.4"/><path class="u-v" d="M27.6 39.4q4.4 4.2 8.8 0"/><path class="u-w" d="M28.6 41q1.7 -2 3.4 0t3.4 0"/></g><circle class="u-o" cx="32" cy="40.6" r="1.9" fill="#FAF6FF"/></g></g></svg></button>
     <p class="bubble you">Jak přidám předplatné?</p>
     <p class="bubble him">Ukážu ti to. Zbytek obrazovky ztmavne a správné místo se rozsvítí.</p>
   </div>
@@ -567,7 +552,42 @@
 </main>
 
 <footer class="foot">
-  <svg class="foot-word" viewBox="0 0 210 44" fill="none" role="img" aria-label="Melaris">
+  <div class="foot-top">
+    <div class="foot-brand">
+      <p class="foot-claim">Od zadání k výsledku.</p>
+      <p>Melaris je pracovní prostor a LLM harness. Prototyp ve vývoji, zatím v testovacím provozu.</p>
+      <a class="btn btn-small" href="https://test.melaris.cz">Přihlásit se</a>
+    </div>
+    <nav class="foot-nav" aria-label="Patička">
+      <div>
+        <h2 class="foot-h">Produkt</h2>
+        <ul>
+          <li><a href="#proc">Proč Melaris vznikl</a></li>
+          <li><a href="#jak">Jak funguje jeden běh</a></li>
+          <li><a href="#mel">Mel ti to ukáže</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="foot-h">Funkce</h2>
+        <ul>
+          <li><a href="#funkce">Funkce v pohybu</a></li>
+          <li><a href="#ukazky">Rozhraní</a></li>
+          <li><a href="#vse">Co všechno Melaris umí</a></li>
+          <li><a href="#srovnani">Srovnání s běžným chatem</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="foot-h">Informace</h2>
+        <ul>
+          <li><a href="#vyhody">Výhody a s čím počítat</a></li>
+          <li><a href="#stav">Kde je Melaris dnes</a></li>
+          <li><a href="#otazky">Časté otázky</a></li>
+          <li><a href="https://onhost.cz" rel="noopener">Ve spolupráci s ONHOST</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+  <svg class="foot-word" viewBox="2 4 208 36" fill="none" role="img" aria-label="Melaris">
     <use href="#m-mark"/>
     <g transform="translate(-32 0)" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M99 12H84v20h15M84 22h12"/><path d="M111 12v20h15"/><path d="m137 32 8-20 8 20m-13-6h10"/><path d="M166 32V12h9a5 5 0 0 1 0 10h-9m8 0 8 10"/><path d="M194 12v20"/><path d="M223 12h-10a5 5 0 0 0 0 10h5a5 5 0 0 1 0 10h-11"/>
@@ -575,7 +595,7 @@
     <path fill="#f21b68" d="m203 27 4 4-4 4-4-4 4-4Z"/>
   </svg>
   <div class="foot-row">
-    <p>Od zadání k výsledku.</p>
+    <p>© 2026 Melaris. Verze 0.2.0.</p>
     <p>Písmo Sora: <a href="/melaris-web-nahled/assets/fonts/Sora-OFL.txt">SIL OFL 1.1</a>. Ikony služeb: lobe-icons, <a href="/melaris-web-nahled/assets/providers/LICENSE-lobe-icons.txt">licence MIT</a>. Názvy a značky služeb patří jejich vlastníkům a neznamenají jejich podporu.</p>
   </div>
 </footer>

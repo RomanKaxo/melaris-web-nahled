@@ -534,6 +534,27 @@
     'M4 17l6-5-6-5M12 19h8'
   ];
   var STATE_NAMES = { h: 'Hotové', t: 'V testu', v: 'Vypnuté' };
+  var STATE_KEYS = ['h', 't', 'v'];
+  function funkci(n) { return n + (n >= 2 && n <= 4 ? ' funkce' : (n === 1 ? ' funkce' : ' funkcí')); }
+  // Prstenec s poměrem stavů: stejný zápis pro kuličky i jádro.
+  function ringOf(parent, counts) {
+    var svg = el('svg', { class: 'orb-seg', viewBox: '0 0 100 100', 'aria-hidden': 'true', focusable: 'false' }, parent);
+    var total = counts.h + counts.t + counts.v;
+    var used = STATE_KEYS.filter(function (k) { return counts[k]; });
+    var gap = used.length > 1 ? 2 : 0;
+    var off = 0;
+    used.forEach(function (k) {
+      var share = counts[k] / total * 100;
+      var len = share - gap;
+      el('circle', {
+        class: 'seg seg-' + k, cx: 50, cy: 50, r: 46, pathLength: 100, transform: 'rotate(-90 50 50)',
+        'stroke-dasharray': len + ' ' + (100 - len), 'stroke-dashoffset': -(off + gap / 2)
+      }, svg);
+      off += share;
+    });
+    return svg;
+  }
+  // Funkce jako orbita: kuličky obíhají jádro, vybraná přeletí do bločku. Bez JS zůstane seznam.
   function initVse() {
     var box = document.querySelector('[data-vse]');
     var legend = document.querySelector('[data-legend]');
@@ -549,40 +570,69 @@
       var st = li.querySelector('.st');
       return st.classList.contains('st-h') ? 'h' : (st.classList.contains('st-t') ? 't' : 'v');
     }
+    function tallyOf(items) {
+      var out = { h: 0, t: 0, v: 0 };
+      items.forEach(function (it) { out[it.state]++; });
+      return out;
+    }
 
     var groups = Array.prototype.slice.call(box.querySelectorAll('.fg'));
     var orb = html('div', 'orb');
+    var wire = el('svg', { class: 'orb-wire', 'aria-hidden': 'true', focusable: 'false' }, orb);
+    var wirePath = el('path', {}, wire);
+
+    // Přepínač stavu s počty.
+    var sw = html('div', 'orb-sw', orb);
+    sw.setAttribute('role', 'group');
+    sw.setAttribute('aria-label', 'Filtr podle stavu');
+
     var stage = html('div', 'orb-stage', orb);
     var sys = html('div', 'orb-sys', stage);
-    var ring = html('div', 'orb-ring', sys);
+    var track = html('div', 'orb-track', sys);
+    var dotsSvg = el('svg', { class: 'orb-dots', role: 'group', 'aria-label': 'Všechny funkce podle stavu' }, sys);
+    var dotsG = el('g', {}, dotsSvg);
+    var gapEl = html('div', 'orb-gap', sys);
+    gapEl.setAttribute('aria-hidden', 'true');
     var core = html('div', 'orb-core', sys);
-    core.setAttribute('aria-hidden', 'true');
     html('span', 'orb-ping', core);
     html('span', 'orb-ping orb-ping2', core);
-    var coreMark = el('svg', { viewBox: '3 5 40 34', 'aria-hidden': 'true', focusable: 'false' }, core);
-    el('path', { d: 'M3 39V7l9-2 11 17L34 5l9 2v32H32V23L23 36l-9-13v16H3Z' }, coreMark);
+    var coreMark = el('svg', { class: 'orb-mark', viewBox: '3 5 40 34', 'aria-hidden': 'true', focusable: 'false' }, core);
+    el('use', { href: '#m-mark' }, coreMark);
+    var coreText = html('p', 'orb-core-n', core);
     var list = html('ul', 'orb-nodes', sys);
     list.setAttribute('aria-label', 'Kategorie funkcí');
-    var cap = html('p', 'orb-cap', orb);
-    cap.setAttribute('aria-hidden', 'true');
+    var tip = html('div', 'orb-tip', stage);
+    tip.hidden = true;
+
+    // Výběr pro telefon: názvy všech kategorií na jednom místě.
+    var pick = html('label', 'orb-pick', orb);
+    html('span', 'vh', pick, 'Kategorie');
+    var select = html('select', '', pick);
+
     var card = html('div', 'orb-card', orb);
-    card.tabIndex = 0;
-    card.setAttribute('role', 'region');
-    card.hidden = true;
-    var cardTop = html('div', 'orb-card-top', card);
-    var cardStates = html('div', 'orb-states', cardTop);
-    var close = html('button', 'orb-close', cardTop);
-    close.type = 'button';
-    close.setAttribute('aria-label', 'Zavřít kartu');
-    var closeIc = el('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true', focusable: 'false' }, close);
-    el('path', { d: 'M6 6l12 12M18 6L6 18' }, closeIc);
+    var head = html('div', 'orb-head', card);
+    var slot = html('span', 'orb-slot', head);
+    var headTx = html('div', 'orb-head-tx', head);
+    var title = html('p', 'orb-title', headTx);
+    title.setAttribute('aria-hidden', 'true');
+    var sub = html('p', 'orb-sub', headTx);
+    var bar = html('div', 'orb-bar', card);
+    bar.setAttribute('aria-hidden', 'true');
+    var states = html('div', 'orb-states', card);
+    var holder = html('div', 'orb-list', card);
     var live = html('p', 'vh', orb);
     live.setAttribute('aria-live', 'polite');
 
     var nodes = groups.map(function (fg, i) {
+      var items = Array.prototype.slice.call(fg.querySelectorAll('.fc')).map(function (it) {
+        return { li: it, state: stateOf(it), name: it.querySelector('h4').textContent };
+      });
+      var counts = tallyOf(items);
       var li = html('li', 'orb-item', list);
+      li.style.setProperty('--c', String(items.length));
       var button = html('button', 'orb-node', li);
       button.type = 'button';
+      ringOf(button, counts);
       var dot = html('span', 'orb-dot', button);
       var ic = el('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true', focusable: 'false' }, dot);
       el('path', { d: ORBIT_ICONS[i % ORBIT_ICONS.length] }, ic);
@@ -590,184 +640,294 @@
       var label = html('span', 'orb-label', button, name);
       fg.id = 'vse-g' + (i + 1);
       button.setAttribute('aria-controls', fg.id);
-      card.appendChild(fg);
-      fg.hidden = true;
-      return {
-        li: li, button: button, dot: dot, label: label, fg: fg, name: name, count: 0,
-        items: Array.prototype.slice.call(fg.querySelectorAll('.fc')).map(function (it) {
-          return { li: it, state: stateOf(it) };
-        })
-      };
+      holder.appendChild(fg);
+      var option = html('option', '', select, name);
+      option.value = String(i);
+      return { li: li, button: button, label: label, fg: fg, name: name, items: items, counts: counts, count: items.length, option: option, x: 0, y: 0, s: 1, fly: null, size: 44 };
     });
     box.textContent = '';
     box.appendChild(orb);
-
-    var total = 0;
-    var tally = { h: 0, t: 0, v: 0 };
-    nodes.forEach(function (n) { n.items.forEach(function (it) { total++; tally[it.state]++; }); });
-
-    // Položky legendy se stanou filtrem, přidá se k nim Vše. Počty jdou přímo z obsahu.
-    var filters = {};
-    var allLi = html('li');
-    allLi.dataset.state = 'all';
-    var allNum = html('span', 'num', allLi, String(total));
-    allNum.setAttribute('aria-hidden', 'true');
-    var allTx = html('span', 'legend-tx', allLi);
-    html('span', 'legend-all', allTx, 'Vše');
-    html('span', 'legend-def', allTx, 'všechny funkce');
-    legend.insertBefore(allLi, legend.firstChild);
-    Array.prototype.slice.call(legend.children).forEach(function (li) {
-      var state = li.dataset.state;
-      var button = html('button', 'flt');
-      button.type = 'button';
-      while (li.firstChild) button.appendChild(li.firstChild);
-      li.appendChild(button);
-      if (state !== 'all') button.querySelector('.num').textContent = String(tally[state]);
-      button.setAttribute('aria-label', button.textContent.replace(/^\d+/, '').replace(/\s+/g, ' ').trim() + ', počet ' + button.querySelector('.num').textContent);
-      filters[state] = button;
-      button.addEventListener('click', function () { setFilter(state); });
-    });
-    legend.setAttribute('role', 'group');
-    legend.setAttribute('aria-label', 'Filtr podle stavu');
+    // Vysvětlení stavů zůstává pod celou skladbou.
+    box.parentNode.appendChild(legend);
     legend.dataset.ready = '1';
 
-    var filter = 'all';
-    var active = -1;
-    var angle = 0;
-    var tween = null;
-    var radius = 200;
-    var compact = false;
-    var focusHold = false;
-    var capIndex = -1;
-    var COUNT = nodes.length;
+    var allItems = [];
+    nodes.forEach(function (n) { n.items.forEach(function (it) { allItems.push(it); }); });
+    var total = allItems.length;
+    var tally = tallyOf(allItems);
+    ringOf(core, tally);
 
-    function place() {
-      var front = 0;
-      var best = -2;
-      nodes.forEach(function (n, i) {
-        var rad = ((i / COUNT) * 360 + angle) % 360 * Math.PI / 180;
-        var x = radius * Math.cos(rad);
-        var y = radius * Math.sin(rad);
-        var sin = Math.sin(rad);
-        var opacity = clamp(0.4 + 0.6 * ((1 + sin) / 2), 0.4, 1);
-        if (sin > best && n.count) { best = sin; front = i; }
-        n.li.style.transform = 'translate(' + x.toFixed(2) + 'px,' + y.toFixed(2) + 'px)';
-        n.li.style.zIndex = i === active ? '200' : String(Math.round(100 + 50 * Math.cos(rad)));
-        // Popisek drží čitelnost i na zadní straně dráhy, plný vzorec platí pro kolečko.
-        n.dot.style.opacity = i === active ? '1' : String(n.count ? opacity : opacity * 0.45);
-        n.label.style.opacity = i === active ? '1' : String(n.count ? Math.max(opacity, 0.72) : 0.72);
+    // Segmenty přepínače.
+    var filters = {};
+    ['all', 'h', 't', 'v'].forEach(function (k) {
+      var button = html('button', 'flt', sw);
+      button.type = 'button';
+      if (k !== 'all') html('span', 'sw-dot sw-' + k, button);
+      html('span', '', button, k === 'all' ? 'Vše' : STATE_NAMES[k]);
+      html('b', '', button, String(k === 'all' ? total : tally[k]));
+      filters[k] = button;
+      button.addEventListener('click', function () { setFilter(k); });
+    });
+
+    // 60 bodů na vnější dráze, po skupinách u své kategorie.
+    var COUNT = nodes.length;
+    var points = [];
+    nodes.forEach(function (n, i) {
+      n.items.forEach(function (it, j) {
+        var g = el('g', { class: 'orb-pt s-' + it.state, role: 'img', tabindex: '-1', 'aria-label': it.name + ', ' + STATE_NAMES[it.state] }, dotsG);
+        var pt = { g: g, node: i, offset: (j - (n.items.length - 1) / 2), it: it, hit: el('circle', { class: 'orb-hit' }, g), dot: el('circle', { class: 'orb-pd' }, g) };
+        it.pt = pt;
+        points.push(pt);
+        g.addEventListener('pointerenter', function () { showTip(pt); });
+        g.addEventListener('pointerleave', hideTip);
+        g.addEventListener('focus', function () { showTip(pt); focusHold = true; });
+        g.addEventListener('blur', function () { hideTip(); focusHold = false; });
+        g.addEventListener('click', function () { rotating = false; choose(i); });
+        it.li.addEventListener('pointerenter', function () { pt.g.classList.add('hot'); });
+        it.li.addEventListener('pointerleave', function () { pt.g.classList.remove('hot'); });
       });
-      if (!compact) return;
-      var show = active >= 0 ? active : front;
-      if (show !== capIndex) {
-        if (nodes[capIndex]) nodes[capIndex].li.classList.remove('front');
-        capIndex = show;
-        nodes[show].li.classList.add('front');
-        cap.textContent = nodes[show].name;
-      }
+    });
+    if (points[0]) points[0].g.setAttribute('tabindex', '0');
+    dotsSvg.addEventListener('keydown', function (event) {
+      var at = points.findIndex(function (p) { return p.g === document.activeElement; });
+      if (at < 0) return;
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); rotating = false; choose(points[at].node); return; }
+      var step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
+      if (!step) return;
+      event.preventDefault();
+      var next = (at + step + points.length) % points.length;
+      points[at].g.setAttribute('tabindex', '-1');
+      points[next].g.setAttribute('tabindex', '0');
+      points[next].g.focus();
+    });
+
+    var filter = 'all';
+    var active = 0;
+    var angle = 0;
+    var rotating = true;
+    var radius = 200;
+    var outer = 280;
+    var compact = false;
+    var stacked = false;
+    var focusHold = false;
+    var hoverHold = false;
+    var slotX = 0;
+    var slotY = 0;
+    var sysX = 0;
+    var sysY = 0;
+    var FLIGHT = 0.6;
+    var widget = null;
+
+    function animating() { return motionOn() && widget && widget.visible; }
+    function orbitPos(i) {
+      var rad = ((i / COUNT) * 360 + angle) * Math.PI / 180;
+      return { x: radius * Math.cos(rad), y: radius * Math.sin(rad), sin: Math.sin(rad), cos: Math.cos(rad) };
+    }
+    function parkedScale(n) { return 64 / (n.size || 44); }
+    function place() {
+      nodes.forEach(function (n, i) {
+        var o = orbitPos(i);
+        var parked = i === active;
+        if (n.fly) {
+          var f = n.fly;
+          var p = f.t < 0.5 ? 4 * f.t * f.t * f.t : 1 - Math.pow(-2 * f.t + 2, 3) / 2;
+          var ex = f.toSlot ? slotX : o.x;
+          var ey = f.toSlot ? slotY : o.y;
+          var es = f.toSlot ? parkedScale(n) : 1;
+          // Oblouk: řídicí bod je kolmo na spojnici.
+          var mx = (f.x + ex) / 2 - (ey - f.y) * 0.22;
+          var my = (f.y + ey) / 2 + (ex - f.x) * 0.22;
+          n.x = (1 - p) * (1 - p) * f.x + 2 * (1 - p) * p * mx + p * p * ex;
+          n.y = (1 - p) * (1 - p) * f.y + 2 * (1 - p) * p * my + p * p * ey;
+          n.s = f.s + (es - f.s) * p;
+        } else if (parked) {
+          n.x = slotX; n.y = slotY; n.s = parkedScale(n);
+        } else {
+          n.x = o.x; n.y = o.y; n.s = 1;
+        }
+        n.li.style.transform = 'translate(' + n.x.toFixed(2) + 'px,' + n.y.toFixed(2) + 'px) scale(' + n.s.toFixed(3) + ')';
+        n.li.style.zIndex = parked || n.fly ? '200' : String(Math.round(100 + 50 * o.cos));
+        var depth = clamp(0.72 + 0.28 * ((1 + o.sin) / 2), 0.72, 1);
+        var matched = n.shown > 0;
+        n.li.style.opacity = parked || n.fly ? '1' : String(matched ? depth : 0.3);
+        n.label.style.opacity = parked || n.fly ? '0' : '';
+      });
+      var gap = orbitPos(active);
+      gapEl.style.transform = 'translate(' + gap.x.toFixed(2) + 'px,' + gap.y.toFixed(2) + 'px)';
+      dotsG.setAttribute('transform', 'rotate(' + angle.toFixed(3) + ')');
+      drawWire();
+    }
+    function drawWire() {
+      var n = nodes[active];
+      var cr = compact ? 46 : 62;
+      var dist = Math.max(1, Math.sqrt(n.x * n.x + n.y * n.y));
+      var ax = sysX + n.x / dist * cr;
+      var ay = sysY + n.y / dist * cr;
+      var bx = sysX + n.x;
+      var by = sysY + n.y;
+      var mx = (ax + bx) / 2 + (by - ay) * 0.12;
+      var my = (ay + by) / 2 - (bx - ax) * 0.12;
+      wirePath.setAttribute('d', 'M' + ax.toFixed(1) + ' ' + ay.toFixed(1) + 'Q' + mx.toFixed(1) + ' ' + my.toFixed(1) + ' ' + bx.toFixed(1) + ' ' + by.toFixed(1));
     }
     function layout() {
       var width = orb.clientWidth;
       if (!width) return;
-      var next = width < 600;
-      if (next !== compact) {
-        compact = next;
-        orb.classList.toggle('compact', compact);
-        if (!compact) { capIndex = -1; nodes.forEach(function (n) { n.li.classList.remove('front'); }); }
-      }
-      var height = stage.clientHeight;
-      var cy = compact ? height / 2 : height / 2 - 14;
-      radius = compact ? width / 2 - 34 : Math.min(width / 2 - 66, height / 2 - 76);
-      sys.style.top = cy + 'px';
-      ring.style.width = ring.style.height = (radius * 2) + 'px';
-      if (compact) {
-        card.style.top = '';
-        card.style.maxHeight = '';
-      } else {
-        var top = cy - radius + 84;
-        card.style.top = top + 'px';
-        card.style.maxHeight = (height - top - 14) + 'px';
-      }
+      // Změna rozměru ukončí rozletěné kuličky: souřadnice letu už neplatí.
+      nodes.forEach(function (n) { n.fly = null; });
+      var nextStack = width < 900;
+      if (nextStack !== stacked) { stacked = nextStack; orb.classList.toggle('orb-col', stacked); }
+      var nextCompact = stage.clientWidth < 560;
+      if (nextCompact !== compact) { compact = nextCompact; orb.classList.toggle('compact', compact); }
+      var w = stage.clientWidth;
+      stage.style.height = stacked ? Math.min(w, 680) + 'px' : '';
+      var h = stage.clientHeight;
+      var half = Math.min(w, h) / 2;
+      outer = half - (compact ? 8 : 14);
+      radius = outer * (compact ? 0.72 : 0.71);
+      var oRect = orb.getBoundingClientRect();
+      var sRect = stage.getBoundingClientRect();
+      sysX = sRect.left - oRect.left + w / 2;
+      sysY = sRect.top - oRect.top + h / 2;
+      sys.style.left = (w / 2) + 'px';
+      sys.style.top = (h / 2) + 'px';
+      track.style.width = track.style.height = (radius * 2) + 'px';
+      wire.setAttribute('viewBox', '0 0 ' + oRect.width + ' ' + oRect.height);
+      wire.setAttribute('width', oRect.width);
+      wire.setAttribute('height', oRect.height);
+      var size = (outer + 16) * 2;
+      dotsSvg.setAttribute('viewBox', (-size / 2) + ' ' + (-size / 2) + ' ' + size + ' ' + size);
+      dotsSvg.style.width = dotsSvg.style.height = size + 'px';
+      dotsSvg.style.left = dotsSvg.style.top = (-size / 2) + 'px';
+      var step = compact ? 3.4 : 3.5;
+      points.forEach(function (pt) {
+        var rad = ((pt.node / COUNT) * 360 + pt.offset * step) * Math.PI / 180;
+        var x = (outer * Math.cos(rad)).toFixed(2);
+        var y = (outer * Math.sin(rad)).toFixed(2);
+        pt.hit.setAttribute('cx', x); pt.hit.setAttribute('cy', y); pt.hit.setAttribute('r', compact ? 8 : 9);
+        pt.dot.setAttribute('cx', x); pt.dot.setAttribute('cy', y); pt.dot.setAttribute('r', compact ? 2.4 : 3);
+      });
+      nodes.forEach(function (n) { n.size = n.button.offsetWidth || 44; });
+      var slRect = slot.getBoundingClientRect();
+      slotX = slRect.left + slRect.width / 2 - sRect.left - w / 2;
+      slotY = slRect.top + slRect.height / 2 - sRect.top - h / 2;
+      gapEl.style.width = gapEl.style.height = nodes[active].size + 'px';
+      gapEl.style.margin = (-nodes[active].size / 2) + 'px 0 0 ' + (-nodes[active].size / 2) + 'px';
       place();
     }
-    function fillCard(n) {
-      cardStates.textContent = '';
-      ['h', 't', 'v'].forEach(function (k) {
-        var count = n.items.filter(function (it) { return it.state === k; }).length;
-        if (!count) return;
-        var wrap = html('span', 'orb-state', cardStates);
+    function showTip(pt) {
+      tip.textContent = '';
+      html('b', '', tip, pt.it.name);
+      html('span', '', tip, STATE_NAMES[pt.it.state]);
+      tip.hidden = false;
+      var rad = ((pt.node / COUNT) * 360 + pt.offset * (compact ? 3.4 : 3.5) + angle) * Math.PI / 180;
+      var r = outer - 30;
+      var w = stage.clientWidth;
+      var h = stage.clientHeight;
+      var tw = tip.offsetWidth;
+      var th = tip.offsetHeight;
+      tip.style.left = clamp(w / 2 + r * Math.cos(rad) - tw / 2, 4, Math.max(4, w - tw - 4)) + 'px';
+      tip.style.top = clamp(h / 2 + r * Math.sin(rad) - th / 2, 4, Math.max(4, h - th - 4)) + 'px';
+      pt.g.classList.add('hot');
+      pt.it.li.classList.add('hot');
+      hoverHold = true;
+    }
+    function hideTip() {
+      tip.hidden = true;
+      points.forEach(function (p) { p.g.classList.remove('hot'); p.it.li.classList.remove('hot'); });
+      hoverHold = false;
+    }
+    function fillCard() {
+      var n = nodes[active];
+      title.textContent = n.name;
+      sub.textContent = funkci(n.count);
+      bar.textContent = '';
+      states.textContent = '';
+      STATE_KEYS.forEach(function (k) {
+        if (!n.counts[k]) return;
+        var part = html('span', 'bar-' + k, bar);
+        part.style.flexGrow = String(n.counts[k]);
+        var wrap = html('span', 'orb-state', states);
         html('span', 'st st-' + k, wrap, STATE_NAMES[k]);
-        html('span', 'orb-state-n', wrap, String(count));
+        html('b', '', wrap, String(n.counts[k]));
       });
-      card.setAttribute('aria-label', n.name);
+    }
+    function arrive() {
+      if (!animating() || !nodes[active].fg.animate) return;
+      nodes[active].items.filter(function (it) { return !it.li.hidden; }).slice(0, 6).forEach(function (it, i) {
+        it.li.animate([{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'none' }], { duration: 380, delay: 160 + i * 50, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' });
+      });
+      head.animate([{ opacity: 0.2 }, { opacity: 1 }], { duration: 320, delay: 180, easing: 'ease', fill: 'backwards' });
     }
     function render(announce) {
       var shown = 0;
       Object.keys(filters).forEach(function (k) { filters[k].setAttribute('aria-pressed', String(k === filter)); });
+      orb.dataset.f = filter;
       nodes.forEach(function (n, i) {
-        n.count = 0;
+        n.shown = 0;
         n.items.forEach(function (it) {
           var on = filter === 'all' || it.state === filter;
           it.li.hidden = !on;
-          if (on) n.count++;
+          if (on) n.shown++;
         });
-        shown += n.count;
-        n.button.disabled = n.count === 0;
-        n.button.setAttribute('aria-label', n.name + ', funkcí ' + n.count);
+        shown += n.shown;
+        n.button.disabled = n.shown === 0;
+        n.option.disabled = n.shown === 0;
+        n.option.textContent = n.name + ' (' + n.shown + ')';
+        n.button.setAttribute('aria-label', n.name + ', ' + funkci(n.shown));
         n.button.setAttribute('aria-expanded', String(i === active));
-        n.li.classList.toggle('on', i === active);
-        n.fg.hidden = i !== active;
+        n.li.classList.toggle('parked', i === active);
+        n.fg.classList.toggle('on', i === active);
       });
-      card.hidden = active < 0;
-      orb.classList.toggle('open', active >= 0);
-      if (active >= 0) fillCard(nodes[active]);
-      if (announce) live.textContent = 'Zobrazeno ' + (active >= 0 ? nodes[active].count : shown) + ' z ' + total;
+      select.value = String(active);
+      coreText.textContent = funkci(shown);
+      gapEl.style.width = gapEl.style.height = nodes[active].size + 'px';
+      gapEl.style.margin = (-nodes[active].size / 2) + 'px 0 0 ' + (-nodes[active].size / 2) + 'px';
+      fillCard();
+      if (announce) live.textContent = nodes[active].name + ', zobrazeno ' + nodes[active].shown + ' z ' + total;
       place();
     }
-    function openNode(i, byKeyboard) {
-      active = i;
-      var to = 270 - (i / COUNT) * 360;
-      if (motionOn()) {
-        var diff = ((to - angle) % 360 + 540) % 360 - 180;
-        tween = { from: angle, to: angle + diff, t: 0 };
-      } else {
-        angle = to;
-        tween = null;
-      }
-      render(true);
-      card.scrollTop = 0;
-      if (byKeyboard) card.focus({ preventScroll: true });
-      if (compact && card.getBoundingClientRect().bottom > window.innerHeight) card.scrollIntoView({ block: 'nearest' });
+    function startFly(n, toSlot) {
+      n.fly = { x: n.x, y: n.y, s: n.s, t: 0, toSlot: toSlot };
     }
-    function closeCard(focusBack) {
-      var was = active;
-      active = -1;
-      tween = null;
+    function choose(i) {
+      if (i === active || nodes[i].shown === 0) return;
+      var prev = nodes[active];
+      active = i;
+      if (animating()) { startFly(prev, false); startFly(nodes[i], true); }
       render(true);
-      if (focusBack && nodes[was]) nodes[was].button.focus();
+      arrive();
+      if (stacked && head.getBoundingClientRect().bottom > window.innerHeight) head.scrollIntoView({ block: 'nearest' });
     }
     function setFilter(next) {
       filter = next;
-      if (active >= 0 && nodes[active].items.every(function (it) { return next !== 'all' && it.state !== next; })) active = -1;
-      render(true);
+      // Zaparkovaná kategorie bez shody: přeletí první, která shodu má.
+      var keep = next === 'all' || nodes[active].items.some(function (it) { return it.state === next; });
+      if (!keep) {
+        var first = nodes.findIndex(function (n) { return n.items.some(function (it) { return it.state === next; }); });
+        render(false);
+        choose(first);
+      } else {
+        render(true);
+      }
     }
 
     nodes.forEach(function (n, i) {
-      n.button.addEventListener('click', function (event) {
-        if (active === i) closeCard(event.detail === 0);
-        else openNode(i, event.detail === 0);
-      });
-      n.button.addEventListener('focus', function () {
-        focusHold = n.button.matches(':focus-visible');
-      });
+      n.button.addEventListener('click', function () { rotating = false; choose(i); });
+      n.button.addEventListener('focus', function () { focusHold = n.button.matches(':focus-visible'); });
       n.button.addEventListener('blur', function () { focusHold = false; });
     });
-    close.addEventListener('click', function () { closeCard(true); });
-    orb.addEventListener('click', function (event) {
-      if (active >= 0 && !event.target.closest('.orb-node') && !event.target.closest('.orb-card')) closeCard(false);
+    select.addEventListener('change', function () { rotating = false; choose(Number(select.value)); });
+    stage.addEventListener('click', function (event) {
+      if (!event.target.closest('.orb-node') && !event.target.closest('.orb-pt')) rotating = true;
+    });
+    stage.addEventListener('pointerover', function (event) {
+      if (event.pointerType === 'mouse' && event.target.closest('.orb-node')) hoverHold = true;
+    });
+    stage.addEventListener('pointerout', function (event) {
+      if (event.pointerType === 'mouse' && event.target.closest('.orb-node')) hoverHold = false;
     });
     orb.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape' && active >= 0) { event.preventDefault(); closeCard(true); }
+      if (event.key === 'Escape') { rotating = true; hideTip(); }
     });
 
     render(false);
@@ -783,24 +943,169 @@
     } else {
       orb.classList.add('in-view');
     }
-    register(orb, {
+    widget = {
       tick: function (dt) {
-        if (tween) {
-          tween.t = Math.min(1, tween.t + dt / 0.7);
-          angle = tween.from + (tween.to - tween.from) * ease(tween.t);
-          if (tween.t === 1) { angle = tween.to; tween = null; }
-          place();
-        } else if (active < 0 && !focusHold) {
+        var moving = false;
+        nodes.forEach(function (n) {
+          if (!n.fly) return;
+          n.fly.t = Math.min(1, n.fly.t + dt / FLIGHT);
+          moving = true;
+          if (n.fly.t === 1) n.fly = null;
+        });
+        if (rotating && !focusHold && !hoverHold) {
           // 0,3° po 50 ms jako v předloze, jen plynule po snímcích.
           angle = (angle + 6 * dt) % 360;
-          place();
+          moving = true;
         }
+        if (moving) place();
       },
       still: function () {
-        if (tween) { angle = tween.to; tween = null; }
+        nodes.forEach(function (n) { n.fly = null; });
         place();
       }
+    };
+    register(orb, widget);
+  }
+
+  // Mel: mrká, rozhlíží se, sleduje kurzor a po kliknutí poskočí.
+  function initMel() {
+    var button = document.getElementById('mel-btn');
+    var svg = document.getElementById('mel-avatar');
+    if (!button || !svg) return;
+    var section = button.closest('.mel');
+    var lids = Array.prototype.slice.call(svg.querySelectorAll('.vk'));
+    var pointer = { x: 0, y: 0, t: -1e9 };
+    var gx = 0;
+    var gy = 0;
+    var tx = 0;
+    var ty = 0;
+    var nextBlink = 0;
+    var nextLook = 0;
+    var lookEnd = 0;
+    var hop = 0;
+    function rand(a, b) { return a + Math.random() * (b - a); }
+    function blink() {
+      var ky = parseFloat(getComputedStyle(svg).getPropertyValue('--ky')) || 0;
+      lids.forEach(function (lid) {
+        if (lid.animate) lid.animate([{ transform: 'scaleY(' + ky + ')' }, { transform: 'scaleY(1)', offset: 0.42 }, { transform: 'scaleY(1)', offset: 0.55 }, { transform: 'scaleY(' + ky + ')' }], { duration: 170, easing: 'ease-in-out' });
+      });
+    }
+    window.addEventListener('pointermove', function (event) {
+      pointer.x = event.clientX; pointer.y = event.clientY; pointer.t = performance.now();
+    }, { passive: true });
+    button.addEventListener('pointerenter', function () { svg.classList.add('hov'); });
+    button.addEventListener('pointerleave', function () { svg.classList.remove('hov'); });
+    button.addEventListener('click', function () {
+      svg.dataset.s = 'done';
+      clearTimeout(hop);
+      hop = setTimeout(function () { svg.dataset.s = 'idle'; }, 1250);
     });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        section.classList.toggle('in-view', entries[entries.length - 1].isIntersecting);
+      }).observe(section);
+    } else {
+      section.classList.add('in-view');
+    }
+    function apply() {
+      var moving = Math.abs(gx) > 0.02 || Math.abs(gy) > 0.02;
+      svg.classList.toggle('sled', moving);
+      if (moving) {
+        svg.style.setProperty('--gx', gx.toFixed(2));
+        svg.style.setProperty('--gy', gy.toFixed(2));
+      } else {
+        svg.style.removeProperty('--gx');
+        svg.style.removeProperty('--gy');
+      }
+    }
+    register(section, {
+      tick: function (dt, now) {
+        if (svg.dataset.s !== 'idle') return;
+        if (!nextBlink) { nextBlink = now + rand(1200, 4000); nextLook = now + rand(2500, 6000); }
+        if (now > nextBlink) { blink(); nextBlink = now + rand(2100, 7400); }
+        var near = now - pointer.t < 2200;
+        if (near) {
+          var r = svg.getBoundingClientRect();
+          var dx = pointer.x - (r.left + r.width / 2);
+          var dy = pointer.y - (r.top + r.height * 0.46);
+          var d = Math.sqrt(dx * dx + dy * dy) || 1;
+          var pull = Math.min(1, d / (r.width * 0.9));
+          tx = dx / d * 3 * pull;
+          ty = dy / d * 2.8 * pull;
+        } else if (now > nextLook) {
+          tx = rand(-2.2, 2.2);
+          ty = rand(-1.4, 1.4);
+          lookEnd = now + rand(700, 1500);
+          nextLook = now + rand(3500, 8000);
+        } else if (now > lookEnd) {
+          tx = 0;
+          ty = 0;
+        }
+        var k = 1 - Math.pow(near ? 0.84 : 0.955, dt * 60);
+        gx += (tx - gx) * k;
+        gy += (ty - gy) * k;
+        apply();
+      },
+      still: function () { gx = gy = tx = ty = 0; apply(); }
+    });
+  }
+
+  // Hlavička: aktivní sekce při posunu, jemná linka a menu na telefonu.
+  function initBar() {
+    var bar = document.querySelector('.bar');
+    if (!bar) return;
+    var links = Array.prototype.slice.call(bar.querySelectorAll('.bar-nav a'));
+    var bySection = { proc: 'proc', jak: 'jak', funkce: 'funkce', ukazky: 'funkce', vse: 'funkce', srovnani: 'srovnani', vyhody: 'srovnani', stav: 'stav', otazky: 'otazky' };
+    function mark(id) {
+      links.forEach(function (a) {
+        if (a.getAttribute('href') === '#' + id) a.setAttribute('aria-current', 'location');
+        else a.removeAttribute('aria-current');
+      });
+    }
+    if ('IntersectionObserver' in window) {
+      var seen = {};
+      var spy = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { seen[e.target.id] = e.isIntersecting; });
+        var hit = Array.prototype.slice.call(document.querySelectorAll('main > section[id]')).filter(function (s) { return seen[s.id]; })[0];
+        mark(hit ? bySection[hit.id] || '' : '');
+      }, { rootMargin: '-40% 0px -55% 0px' });
+      Array.prototype.slice.call(document.querySelectorAll('main > section[id]')).forEach(function (s) { spy.observe(s); });
+    }
+    function onScroll() { bar.classList.toggle('scrolled', window.scrollY > 8); }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    var toggle = document.getElementById('menu-toggle');
+    var menu = document.getElementById('bar-menu');
+    if (!toggle || !menu) return;
+    var phone = window.matchMedia('(max-width:899px)');
+    function isOpen() { return toggle.getAttribute('aria-expanded') === 'true'; }
+    function setOpen(open, refocus) {
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Zavřít menu' : 'Otevřít menu');
+      menu.classList.toggle('open', open);
+      if (open) { var first = menu.querySelector('a'); if (first) first.focus(); }
+      else if (refocus) toggle.focus();
+    }
+    toggle.addEventListener('click', function () { setOpen(!isOpen(), true); });
+    menu.addEventListener('click', function (event) {
+      if (event.target.closest('a')) setOpen(false, false);
+    });
+    document.addEventListener('click', function (event) {
+      if (isOpen() && !bar.contains(event.target)) setOpen(false, false);
+    });
+    bar.addEventListener('keydown', function (event) {
+      if (!isOpen()) return;
+      if (event.key === 'Escape') { event.preventDefault(); setOpen(false, true); return; }
+      if (event.key !== 'Tab') return;
+      // Fokus zůstává v menu a na tlačítku, které ho zavírá.
+      var items = Array.prototype.slice.call(menu.querySelectorAll('a,button')).filter(function (el) { return !el.disabled; }).concat(toggle);
+      var at = items.indexOf(document.activeElement);
+      var next = (at + (event.shiftKey ? -1 : 1) + items.length) % items.length;
+      event.preventDefault();
+      items[next].focus();
+    });
+    if (phone.addEventListener) phone.addEventListener('change', function () { if (isOpen()) setOpen(false, false); });
   }
 
   function initTheme() {
@@ -825,7 +1130,7 @@
   }
 
   // Jedna chyba, třeba starý main.js z cache s novým HTML, nesmí zastavit zbytek stránky.
-  [initTheme, initMotionToggle, initReveal, initVse, initHero, initFlow, initHub, initGates, initUiPanel].forEach(function (init) {
+  [initBar, initTheme, initMotionToggle, initReveal, initVse, initHero, initFlow, initHub, initGates, initUiPanel, initMel].forEach(function (init) {
     try { init(); } catch (error) { if (window.console) console.error(error); }
   });
   syncMotion();
