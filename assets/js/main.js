@@ -348,12 +348,13 @@
     panel.classList.add('ready');
   }
 
-  // Schéma 3: cesta úlohy šesti kroky. Závora u člověka se otevře, až když úloha projde.
+  // Schéma 3: křivka běhu. Křivka se počítá ze skutečné velikosti, ovládají ji tlačítka pod ní.
   function initGates() {
     var fig = document.getElementById('gates');
     if (!fig) return;
     var HUMAN = 3;
     var DWELL = 2;
+    var LEVELS = [0.8, 0.7, 0.58, 0.4, 0.27, 0.14];
     var list = fig.querySelector('[data-steps]');
     var steps = Array.prototype.slice.call(list.children);
     function html(tag, cls, parent, text) {
@@ -364,13 +365,18 @@
       return node;
     }
     var road = html('div', 'gate-road');
-    var line = html('div', 'gate-line', road);
-    var fill = html('div', 'gate-fill', line);
-    var track = html('div', 'gate-track', road);
-    var token = html('span', 'gate-token', track);
-    track.setAttribute('aria-hidden', 'true');
-    html('span', 'gate-post', road).setAttribute('aria-hidden', 'true');
-    html('span', 'gate-note', road, 'člověk rozhoduje').setAttribute('aria-hidden', 'true');
+    var chart = html('div', 'gates-chart', road);
+    var svg = el('svg', { 'aria-hidden': 'true', focusable: 'false' }, chart);
+    var clipRect = el('rect', { x: 0, y: 0, width: 0, height: '100%' }, el('clipPath', { id: 'gate-clip' }, svg));
+    var human = el('path', { class: 'gate-human' }, svg);
+    var area = el('path', { class: 'area', 'clip-path': 'url(#gate-clip)' }, svg);
+    var curveEl = el('path', { class: 'curve' }, svg);
+    var curveOn = el('path', { class: 'curve-on' }, svg);
+    var marks = el('g', {}, svg);
+    var ring = el('circle', { class: 'head-ring', r: 15 }, svg);
+    var head = el('circle', { class: 'head', r: 6 }, svg);
+    var note = html('span', 'gate-note', chart, 'člověk rozhoduje');
+    note.setAttribute('aria-hidden', 'true');
     var group = html('div', 'gate-stops', road);
     group.setAttribute('role', 'group');
     group.setAttribute('aria-label', 'Kroky běhu');
@@ -379,27 +385,67 @@
       button.type = 'button';
       html('span', 'num', button, String(i + 1)).setAttribute('aria-hidden', 'true');
       html('b', '', button, step.querySelector('h4').textContent);
-      html('span', 'gate-short', button, step.querySelector('.gate-do').textContent);
-      button.setAttribute('aria-controls', 'gate-s' + (i + 1));
       step.id = 'gate-s' + (i + 1);
+      button.setAttribute('aria-controls', step.id);
       button.addEventListener('click', function () { interact(i); });
-      button.addEventListener('pointerenter', function (event) { if (event.pointerType === 'mouse') interact(i); });
       button.addEventListener('focus', function () { if (button.matches(':focus-visible')) interact(i); });
       return button;
     });
     fig.insertBefore(road, list);
 
+    var points = [];
+    var lengths = [0];
+    var markEls = [];
+    var total = 1;
     var pos = 0;
     var target = 0;
     var wait = 1.4;
     var holdUntil = 0;
 
+    function segment(a, b) {
+      var mx = (a[0] + b[0]) / 2;
+      return 'C' + mx + ' ' + a[1] + ' ' + mx + ' ' + b[1] + ' ' + b[0] + ' ' + b[1];
+    }
+    function layout() {
+      var box = chart.getBoundingClientRect();
+      if (!box.width) return;
+      fitSvg(svg, box);
+      svg.style.width = '';
+      var floor = box.height - 4;
+      // Body leží přesně nad tlačítky.
+      points = LEVELS.map(function (level, i) { return [(i + 0.5) / LEVELS.length * box.width, level * floor]; });
+      var d = 'M' + points[0][0] + ' ' + points[0][1];
+      var probe = el('path', {});
+      lengths = [0];
+      for (var i = 1; i < points.length; i++) {
+        d += segment(points[i - 1], points[i]);
+        probe.setAttribute('d', d);
+        lengths.push(probe.getTotalLength());
+      }
+      curveEl.setAttribute('d', d);
+      curveOn.setAttribute('d', d);
+      total = lengths[lengths.length - 1];
+      curveOn.setAttribute('stroke-dasharray', total + ' ' + total);
+      area.setAttribute('d', d + 'L' + points[points.length - 1][0] + ' ' + floor + 'H' + points[0][0] + 'Z');
+      human.setAttribute('d', 'M' + points[HUMAN][0] + ' 22V' + floor);
+      note.style.left = points[HUMAN][0] + 'px';
+      marks.textContent = '';
+      markEls = points.map(function (p) { return el('circle', { class: 'mark', cx: p[0], cy: p[1], r: 4 }, marks); });
+      draw();
+    }
     function draw() {
-      var p = pos / (steps.length - 1);
-      fill.style.transform = 'scaleX(' + p.toFixed(4) + ')';
-      token.style.setProperty('--p', p.toFixed(4));
-      stops.forEach(function (stop, i) { stop.classList.toggle('done', i <= pos + 0.02); });
-      road.classList.toggle('pass', pos > HUMAN + 0.02);
+      if (!points.length) return;
+      var a = Math.floor(pos);
+      var b = Math.min(lengths.length - 1, a + 1);
+      var len = lengths[a] + (lengths[b] - lengths[a]) * (pos - a);
+      var q = curveEl.getPointAtLength(len);
+      head.setAttribute('cx', q.x);
+      head.setAttribute('cy', q.y);
+      ring.setAttribute('cx', q.x);
+      ring.setAttribute('cy', q.y);
+      curveOn.setAttribute('stroke-dashoffset', total - len);
+      clipRect.setAttribute('width', q.x);
+      markEls.forEach(function (m, i) { m.classList.toggle('on', i <= pos + 0.02); });
     }
     function show(index, announce) {
       var changed = index !== target;
@@ -415,13 +461,21 @@
     function interact(index) {
       holdUntil = performance.now() + 9000;
       wait = 0;
-      show(index, true);
+      if (index !== target) show(index, true);
       if (!motionOn()) { pos = index; draw(); }
     }
+    chart.addEventListener('pointermove', function (event) {
+      if (!points.length) return;
+      var x = event.clientX - chart.getBoundingClientRect().left;
+      var best = 0;
+      points.forEach(function (p, i) { if (Math.abs(p[0] - x) < Math.abs(points[best][0] - x)) best = i; });
+      interact(best);
+    });
     group.addEventListener('keydown', function (event) {
       var at = stops.indexOf(document.activeElement);
       if (at < 0) return;
-      var map = { ArrowRight: Math.min(at + 1, stops.length - 1), ArrowLeft: Math.max(at - 1, 0), ArrowDown: Math.min(at + 1, stops.length - 1), ArrowUp: Math.max(at - 1, 0), Home: 0, End: stops.length - 1 };
+      var last = stops.length - 1;
+      var map = { ArrowRight: Math.min(at + 1, last), ArrowLeft: Math.max(at - 1, 0), ArrowDown: Math.min(at + 1, last), ArrowUp: Math.max(at - 1, 0), Home: 0, End: last };
       if (map[event.key] === undefined) return;
       event.preventDefault();
       stops[map[event.key]].focus();
@@ -429,7 +483,10 @@
     });
     root.classList.add('gates-ready');
     show(0, false);
-    draw();
+    layout();
+    if ('ResizeObserver' in window) new ResizeObserver(layout).observe(chart);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
+    window.addEventListener('load', layout);
     register(fig, {
       tick: function (dt, now) {
         var diff = target - pos;
@@ -442,7 +499,7 @@
         }
         if (now > holdUntil) {
           wait += dt;
-          // U člověka úloha počká déle: právě tady se běh zastavuje.
+          // U člověka běh počká déle: právě tady se zastavuje.
           if (wait >= (target === HUMAN ? DWELL * 1.6 : DWELL)) {
             wait = 0;
             show(target === steps.length - 1 ? 0 : target + 1, false);
@@ -901,23 +958,6 @@
     register(orb, widget);
   }
 
-  // Dlouhé doplňky jsou na telefonu sbalené, jinak otevřené. Bez JS zůstávají otevřené.
-  function initCollapse() {
-    var items = Array.prototype.slice.call(document.querySelectorAll('[data-collapse]'));
-    var phone = window.matchMedia('(max-width:719px)');
-    var rows = Array.prototype.slice.call(document.querySelectorAll('.steps,.adv'));
-    function apply() {
-      items.forEach(function (item) { item.open = !phone.matches; });
-      // Vodorovná řada na telefonu musí jít posouvat i klávesnicí.
-      rows.forEach(function (row) {
-        if (phone.matches) row.setAttribute('tabindex', '0');
-        else row.removeAttribute('tabindex');
-      });
-    }
-    apply();
-    if (phone.addEventListener) phone.addEventListener('change', apply);
-  }
-
   // Jméno: každé písmeno ukáže své odůvodnění a jeho hranice. Bez JS jsou vidět všechna.
   function initName() {
     var box = document.querySelector('[data-name]');
@@ -1054,7 +1094,7 @@
     var bar = document.querySelector('.bar');
     if (!bar) return;
     var links = Array.prototype.slice.call(bar.querySelectorAll('.bar-nav a'));
-    var bySection = { proc: 'proc', jak: 'jak', funkce: 'funkce', ukazky: 'funkce', vse: 'funkce', srovnani: 'srovnani', vyhody: 'srovnani', stav: 'stav', otazky: 'otazky' };
+    var bySection = { proc: 'proc', jak: 'jak', mel: 'jak', funkce: 'funkce', ukazky: 'funkce', vse: 'funkce', srovnani: 'srovnani', vyhody: 'srovnani', stav: 'stav', otazky: 'otazky' };
     function mark(id) {
       links.forEach(function (a) {
         if (a.getAttribute('href') === '#' + id) a.setAttribute('aria-current', 'location');
@@ -1138,7 +1178,7 @@
   }
 
   // Jedna chyba, třeba starý main.js z cache s novým HTML, nesmí zastavit zbytek stránky.
-  [initBar, initTheme, initMotionToggle, initReveal, initVse, initHero, initFlow, initHub, initGates, initUiPanel, initMel, initName, initCollapse].forEach(function (init) {
+  [initBar, initTheme, initMotionToggle, initReveal, initVse, initHero, initFlow, initHub, initGates, initUiPanel, initMel, initName].forEach(function (init) {
     try { init(); } catch (error) { if (window.console) console.error(error); }
   });
   syncMotion();
