@@ -9,7 +9,13 @@
     set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) { /* bez úložiště */ } }
   };
   var SVGNS = 'http://www.w3.org/2000/svg';
-  var userPaused = store.get('melaris-motion') === 'off';
+  // Zastavení pohybu platí jen do zavření karty, aby web nezůstal omylem navždy bez animací.
+  var session = {
+    get: function (k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { sessionStorage.setItem(k, v); } catch (e) { /* bez úložiště */ } }
+  };
+  try { localStorage.removeItem('melaris-motion'); } catch (e) { /* bez úložiště */ }
+  var userPaused = session.get('melaris-motion') === 'off';
   var widgets = [];
   var frame = 0;
   var last = 0;
@@ -297,24 +303,29 @@
     var wide = window.matchMedia('(min-width:1024px)');
     var EASE = 'cubic-bezier(.4,0,.2,1)';
     var current = 0;
-    function run(row, frames, done) {
+    // Stejně jako předloha: na počítači rám stojí a mění se obsah, nejdřív odchod, pak příchod.
+    function run(row, node, frames, options, done) {
       if (row.anim) row.anim.cancel();
-      row.anim = row.fig.animate(frames, { duration: 350, easing: EASE });
+      options.duration = 350;
+      options.easing = EASE;
+      row.anim = node.animate(frames, options);
       row.anim.onfinish = function () { row.anim = null; if (done) done(); };
     }
+    function target(row) { return wide.matches ? row.fig.querySelector('svg') : row.fig; }
     function leave(row) {
       row.fig.classList.add('leave');
       var height = row.fig.offsetHeight;
-      run(row, wide.matches
+      run(row, target(row), wide.matches
         ? [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-8px) scale(.98)' }]
         : [{ height: height + 'px', marginBottom: '16px', opacity: 1 }, { height: 0, marginBottom: 0, opacity: 0 }],
-      function () { row.fig.classList.remove('leave'); });
+      {}, function () { row.fig.classList.remove('leave'); });
     }
     function enter(row) {
       var height = row.fig.offsetHeight;
-      run(row, wide.matches
+      run(row, target(row), wide.matches
         ? [{ opacity: 0, transform: 'translateY(12px) scale(.98)' }, { opacity: 1, transform: 'none' }]
-        : [{ height: 0, marginBottom: 0, opacity: 0 }, { height: height + 'px', marginBottom: '16px', opacity: 1 }]);
+        : [{ height: 0, marginBottom: 0, opacity: 0 }, { height: height + 'px', marginBottom: '16px', opacity: 1 }],
+      wide.matches ? { delay: 350, fill: 'backwards' } : {});
     }
     function show(index, animate) {
       var moving = animate && motionOn() && index !== current && !!rows[0].fig.animate;
@@ -330,6 +341,7 @@
       current = index;
     }
     rows.forEach(function (row, i) {
+      row.button.dataset.delay = String(i * 70);
       row.button.addEventListener('click', function () { show(i, true); });
     });
     show(0, false);
@@ -371,9 +383,10 @@
 
     var pos = 0;
     var target = 0;
-    var wait = 0;
+    // První krok přijde krátce po vjezdu do okna, ať schéma nepůsobí zamrzle.
+    var wait = 1.4;
     var holdUntil = 0;
-    var DWELL = 2.8;
+    var DWELL = 2;
 
     function segment(a, b) {
       var mx = (a[0] + b[0]) / 2;
@@ -495,7 +508,8 @@
       var n = 0;
       entries.forEach(function (entry) {
         if (!entry.isIntersecting) return;
-        entry.target.style.transitionDelay = (n++ * 70) + 'ms';
+        var own = entry.target.dataset.delay;
+        entry.target.style.transitionDelay = (own !== undefined ? own : n++ * 70) + 'ms';
         entry.target.classList.add('in');
         io.unobserve(entry.target);
       });
@@ -503,12 +517,27 @@
     items.forEach(function (i) { io.observe(i); });
   }
 
-  // Funkce: filtr podle stavu a kategorie. Bez JS zůstane vidět všechno.
+  // Funkce jako orbita: 13 kategorií obíhá jádro, klik otevře kartu s funkcemi. Bez JS zůstane seznam.
+  var ORBIT_ICONS = [
+    'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z',
+    'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75',
+    'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z',
+    'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20M12 6v6l4 2',
+    'M9 3a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 1 5 3 3 0 0 0 4 3 3 3 0 0 0 3-2V5a3 3 0 0 0-3-2zM15 3a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-1 5 3 3 0 0 1-4 3 3 3 0 0 1-3-2',
+    'M3 3h18v18H3zM9 3v18M15 3v18',
+    'M3 5h18v14H3zM3 7l9 6 9-6',
+    'M4 20V10M10 20V4M16 20v-7M22 20H2',
+    'M9 2v6M15 2v6M6 8h12v4a6 6 0 0 1-12 0zM12 18v4',
+    'M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8',
+    'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4',
+    'M21 12a9 9 0 1 1-2.64-6.36L21 8M21 3v5h-5',
+    'M4 17l6-5-6-5M12 19h8'
+  ];
+  var STATE_NAMES = { h: 'Hotové', t: 'V testu', v: 'Vypnuté' };
   function initVse() {
     var box = document.querySelector('[data-vse]');
     var legend = document.querySelector('[data-legend]');
     if (!box || !legend) return;
-    var phone = window.matchMedia('(max-width:719px)');
     function html(tag, cls, parent, text) {
       var node = document.createElement(tag);
       if (cls) node.className = cls;
@@ -520,41 +549,62 @@
       var st = li.querySelector('.st');
       return st.classList.contains('st-h') ? 'h' : (st.classList.contains('st-t') ? 't' : 'v');
     }
-    function catRow(name, parent) {
-      var li = html('li', '', parent);
-      var button = html('button', 'cat', li);
-      button.type = 'button';
-      var num = html('span', 'num', button);
-      num.setAttribute('aria-hidden', 'true');
-      html('span', 'cat-name', button, name);
-      return { li: li, button: button, num: num };
-    }
 
     var groups = Array.prototype.slice.call(box.querySelectorAll('.fg'));
-    var cats = html('ul', 'cats');
-    cats.setAttribute('aria-label', 'Kategorie funkcí');
-    var all = catRow('Všechny kategorie', cats);
-    var rows = groups.map(function (fg, i) {
-      var row = catRow(fg.querySelector('h3').textContent, cats);
-      row.fg = fg;
-      fg.id = 'vse-g' + (i + 1);
-      row.button.setAttribute('aria-controls', fg.id);
-      row.items = Array.prototype.slice.call(fg.querySelectorAll('.fc')).map(function (li) {
-        return { li: li, state: stateOf(li) };
-      });
-      return row;
-    });
-    var panel = html('div', 'vse-panel');
-    var live = html('p', 'vh');
+    var orb = html('div', 'orb');
+    var stage = html('div', 'orb-stage', orb);
+    var sys = html('div', 'orb-sys', stage);
+    var ring = html('div', 'orb-ring', sys);
+    var core = html('div', 'orb-core', sys);
+    core.setAttribute('aria-hidden', 'true');
+    html('span', 'orb-ping', core);
+    html('span', 'orb-ping orb-ping2', core);
+    var coreMark = el('svg', { viewBox: '3 5 40 34', 'aria-hidden': 'true', focusable: 'false' }, core);
+    el('path', { d: 'M3 39V7l9-2 11 17L34 5l9 2v32H32V23L23 36l-9-13v16H3Z' }, coreMark);
+    var list = html('ul', 'orb-nodes', sys);
+    list.setAttribute('aria-label', 'Kategorie funkcí');
+    var cap = html('p', 'orb-cap', orb);
+    cap.setAttribute('aria-hidden', 'true');
+    var card = html('div', 'orb-card', orb);
+    card.tabIndex = 0;
+    card.setAttribute('role', 'region');
+    card.hidden = true;
+    var cardTop = html('div', 'orb-card-top', card);
+    var cardStates = html('div', 'orb-states', cardTop);
+    var close = html('button', 'orb-close', cardTop);
+    close.type = 'button';
+    close.setAttribute('aria-label', 'Zavřít kartu');
+    var closeIc = el('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true', focusable: 'false' }, close);
+    el('path', { d: 'M6 6l12 12M18 6L6 18' }, closeIc);
+    var live = html('p', 'vh', orb);
     live.setAttribute('aria-live', 'polite');
+
+    var nodes = groups.map(function (fg, i) {
+      var li = html('li', 'orb-item', list);
+      var button = html('button', 'orb-node', li);
+      button.type = 'button';
+      var dot = html('span', 'orb-dot', button);
+      var ic = el('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true', focusable: 'false' }, dot);
+      el('path', { d: ORBIT_ICONS[i % ORBIT_ICONS.length] }, ic);
+      var name = fg.querySelector('h3').textContent;
+      var label = html('span', 'orb-label', button, name);
+      fg.id = 'vse-g' + (i + 1);
+      button.setAttribute('aria-controls', fg.id);
+      card.appendChild(fg);
+      fg.hidden = true;
+      return {
+        li: li, button: button, dot: dot, label: label, fg: fg, name: name, count: 0,
+        items: Array.prototype.slice.call(fg.querySelectorAll('.fc')).map(function (it) {
+          return { li: it, state: stateOf(it) };
+        })
+      };
+    });
     box.textContent = '';
-    box.appendChild(cats);
-    box.appendChild(panel);
-    box.appendChild(live);
+    box.appendChild(orb);
 
     var total = 0;
     var tally = { h: 0, t: 0, v: 0 };
-    rows.forEach(function (row) { row.items.forEach(function (it) { total++; tally[it.state]++; }); });
+    nodes.forEach(function (n) { n.items.forEach(function (it) { total++; tally[it.state]++; }); });
 
     // Položky legendy se stanou filtrem, přidá se k nim Vše. Počty jdou přímo z obsahu.
     var filters = {};
@@ -582,60 +632,175 @@
     legend.dataset.ready = '1';
 
     var filter = 'all';
-    var cat = 0;
-    var before = 0;
+    var active = -1;
+    var angle = 0;
+    var tween = null;
+    var radius = 200;
+    var compact = false;
+    var focusHold = false;
+    var capIndex = -1;
+    var COUNT = nodes.length;
 
-    function matches(it) { return filter === 'all' || it.state === filter; }
+    function place() {
+      var front = 0;
+      var best = -2;
+      nodes.forEach(function (n, i) {
+        var rad = ((i / COUNT) * 360 + angle) % 360 * Math.PI / 180;
+        var x = radius * Math.cos(rad);
+        var y = radius * Math.sin(rad);
+        var sin = Math.sin(rad);
+        var opacity = clamp(0.4 + 0.6 * ((1 + sin) / 2), 0.4, 1);
+        if (sin > best && n.count) { best = sin; front = i; }
+        n.li.style.transform = 'translate(' + x.toFixed(2) + 'px,' + y.toFixed(2) + 'px)';
+        n.li.style.zIndex = i === active ? '200' : String(Math.round(100 + 50 * Math.cos(rad)));
+        // Popisek drží čitelnost i na zadní straně dráhy, plný vzorec platí pro kolečko.
+        n.dot.style.opacity = i === active ? '1' : String(n.count ? opacity : opacity * 0.45);
+        n.label.style.opacity = i === active ? '1' : String(n.count ? Math.max(opacity, 0.72) : 0.72);
+      });
+      if (!compact) return;
+      var show = active >= 0 ? active : front;
+      if (show !== capIndex) {
+        if (nodes[capIndex]) nodes[capIndex].li.classList.remove('front');
+        capIndex = show;
+        nodes[show].li.classList.add('front');
+        cap.textContent = nodes[show].name;
+      }
+    }
+    function layout() {
+      var width = orb.clientWidth;
+      if (!width) return;
+      var next = width < 600;
+      if (next !== compact) {
+        compact = next;
+        orb.classList.toggle('compact', compact);
+        if (!compact) { capIndex = -1; nodes.forEach(function (n) { n.li.classList.remove('front'); }); }
+      }
+      var height = stage.clientHeight;
+      var cy = compact ? height / 2 : height / 2 - 14;
+      radius = compact ? width / 2 - 34 : Math.min(width / 2 - 66, height / 2 - 76);
+      sys.style.top = cy + 'px';
+      ring.style.width = ring.style.height = (radius * 2) + 'px';
+      if (compact) {
+        card.style.top = '';
+        card.style.maxHeight = '';
+      } else {
+        var top = cy - radius + 84;
+        card.style.top = top + 'px';
+        card.style.maxHeight = (height - top - 14) + 'px';
+      }
+      place();
+    }
+    function fillCard(n) {
+      cardStates.textContent = '';
+      ['h', 't', 'v'].forEach(function (k) {
+        var count = n.items.filter(function (it) { return it.state === k; }).length;
+        if (!count) return;
+        var wrap = html('span', 'orb-state', cardStates);
+        html('span', 'st st-' + k, wrap, STATE_NAMES[k]);
+        html('span', 'orb-state-n', wrap, String(count));
+      });
+      card.setAttribute('aria-label', n.name);
+    }
     function render(announce) {
       var shown = 0;
       Object.keys(filters).forEach(function (k) { filters[k].setAttribute('aria-pressed', String(k === filter)); });
-      rows.forEach(function (row, i) {
-        var count = 0;
-        row.items.forEach(function (it) {
-          var on = matches(it);
+      nodes.forEach(function (n, i) {
+        n.count = 0;
+        n.items.forEach(function (it) {
+          var on = filter === 'all' || it.state === filter;
           it.li.hidden = !on;
-          if (on) count++;
+          if (on) n.count++;
         });
-        var visible = count > 0 && (cat === 'all' || cat === i);
-        row.num.textContent = String(count);
-        row.button.disabled = count === 0;
-        row.button.setAttribute('aria-expanded', String(visible));
-        row.button.setAttribute('aria-current', String(cat === i));
-        row.li.classList.toggle('on', visible);
-        row.fg.hidden = !visible;
-        if (visible) shown += count;
+        shown += n.count;
+        n.button.disabled = n.count === 0;
+        n.button.setAttribute('aria-label', n.name + ', funkcí ' + n.count);
+        n.button.setAttribute('aria-expanded', String(i === active));
+        n.li.classList.toggle('on', i === active);
+        n.fg.hidden = i !== active;
       });
-      all.num.textContent = String(filter === 'all' ? total : tally[filter]);
-      all.button.setAttribute('aria-current', String(cat === 'all'));
-      all.li.classList.toggle('on', cat === 'all');
-      if (announce) live.textContent = 'Zobrazeno ' + shown + ' z ' + total;
+      card.hidden = active < 0;
+      orb.classList.toggle('open', active >= 0);
+      if (active >= 0) fillCard(nodes[active]);
+      if (announce) live.textContent = 'Zobrazeno ' + (active >= 0 ? nodes[active].count : shown) + ' z ' + total;
+      place();
+    }
+    function openNode(i, byKeyboard) {
+      active = i;
+      var to = 270 - (i / COUNT) * 360;
+      if (motionOn()) {
+        var diff = ((to - angle) % 360 + 540) % 360 - 180;
+        tween = { from: angle, to: angle + diff, t: 0 };
+      } else {
+        angle = to;
+        tween = null;
+      }
+      render(true);
+      card.scrollTop = 0;
+      if (byKeyboard) card.focus({ preventScroll: true });
+      if (compact && card.getBoundingClientRect().bottom > window.innerHeight) card.scrollIntoView({ block: 'nearest' });
+    }
+    function closeCard(focusBack) {
+      var was = active;
+      active = -1;
+      tween = null;
+      render(true);
+      if (focusBack && nodes[was]) nodes[was].button.focus();
     }
     function setFilter(next) {
-      // Filtr hledá napříč kategoriemi; Vše vrátí předchozí kategorii.
-      if (next !== 'all' && filter === 'all') before = cat;
-      if (next !== 'all') cat = 'all';
-      else if (filter !== 'all') cat = before;
       filter = next;
+      if (active >= 0 && nodes[active].items.every(function (it) { return next !== 'all' && it.state !== next; })) active = -1;
       render(true);
     }
-    function setCat(next, row) {
-      cat = next;
-      render(true);
-      var anchor = phone.matches ? row.li : panel;
-      if (anchor.getBoundingClientRect().top < 0) anchor.scrollIntoView({ block: 'start' });
-    }
-    all.button.addEventListener('click', function () { setCat('all', all); });
-    rows.forEach(function (row, i) {
-      row.button.addEventListener('click', function () { setCat(i, row); });
+
+    nodes.forEach(function (n, i) {
+      n.button.addEventListener('click', function (event) {
+        if (active === i) closeCard(event.detail === 0);
+        else openNode(i, event.detail === 0);
+      });
+      n.button.addEventListener('focus', function () {
+        focusHold = n.button.matches(':focus-visible');
+      });
+      n.button.addEventListener('blur', function () { focusHold = false; });
     });
-    // Na telefonu se obsah rozbalí v rámečku kategorie, jinak je v panelu vedle.
-    function place() {
-      rows.forEach(function (row) { (phone.matches ? row.li : panel).appendChild(row.fg); });
-    }
-    place();
-    if (phone.addEventListener) phone.addEventListener('change', place);
+    close.addEventListener('click', function () { closeCard(true); });
+    orb.addEventListener('click', function (event) {
+      if (active >= 0 && !event.target.closest('.orb-node') && !event.target.closest('.orb-card')) closeCard(false);
+    });
+    orb.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && active >= 0) { event.preventDefault(); closeCard(true); }
+    });
+
     render(false);
     box.classList.add('ready');
+    layout();
+    if ('ResizeObserver' in window) new ResizeObserver(layout).observe(orb);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
+    window.addEventListener('load', layout);
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        orb.classList.toggle('in-view', entries[entries.length - 1].isIntersecting);
+      }).observe(orb);
+    } else {
+      orb.classList.add('in-view');
+    }
+    register(orb, {
+      tick: function (dt) {
+        if (tween) {
+          tween.t = Math.min(1, tween.t + dt / 0.7);
+          angle = tween.from + (tween.to - tween.from) * ease(tween.t);
+          if (tween.t === 1) { angle = tween.to; tween = null; }
+          place();
+        } else if (active < 0 && !focusHold) {
+          // 0,3° po 50 ms jako v předloze, jen plynule po snímcích.
+          angle = (angle + 6 * dt) % 360;
+          place();
+        }
+      },
+      still: function () {
+        if (tween) { angle = tween.to; tween = null; }
+        place();
+      }
+    });
   }
 
   function initTheme() {
@@ -653,20 +818,15 @@
     if (!button) return;
     button.addEventListener('click', function () {
       userPaused = !userPaused;
-      store.set('melaris-motion', userPaused ? 'off' : 'on');
+      session.set('melaris-motion', userPaused ? 'off' : 'on');
       syncMotion();
     });
     if (reduced.addEventListener) reduced.addEventListener('change', syncMotion);
   }
 
-  initTheme();
-  initMotionToggle();
-  initVse();
-  initReveal();
-  initHero();
-  initFlow();
-  initHub();
-  initGates();
-  initUiPanel();
+  // Jedna chyba, třeba starý main.js z cache s novým HTML, nesmí zastavit zbytek stránky.
+  [initTheme, initMotionToggle, initReveal, initVse, initHero, initFlow, initHub, initGates, initUiPanel].forEach(function (init) {
+    try { init(); } catch (error) { if (window.console) console.error(error); }
+  });
   syncMotion();
 })();
