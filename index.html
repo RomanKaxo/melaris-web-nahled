@@ -6,8 +6,8 @@
 <title>Melaris: tým AI agentů pod kontrolou</title>
 <meta name="description" content="Melaris je pracovní prostor a LLM harness. Napíšeš jedno zadání, Mel rozdělí práci specialistům a ty vidíš, kdo co dělá, co se změnilo a co ještě čeká. Prototyp v testovacím provozu.">
 <link rel="canonical" href="https://melaris.cz/">
-<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#171522">
-<meta name="theme-color" media="(prefers-color-scheme: light)" content="#FAF6FF">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#12001E">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#F1E2FF">
 <meta name="color-scheme" content="dark light">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="cs_CZ">
@@ -113,12 +113,22 @@
   <h2 id="proc-title" class="rv">Proč Melaris vznikl</h2>
   <p class="statement rv">Jazykový model umí odpovědět textem. Aby četl soubory, spouštěl příkazy a držel se pravidel, potřebuje kolem sebe program, který ho řídí. Tomu se říká harness.</p>
   <div class="why-cols">
-    <div class="rv">
-      <p>Melaris vzniká jako maturitní projekt na téma vývoj LLM harnessu. Má vlastní agentní smyčku v Node.js a nad jedním místním jádrem stojí webové rozhraní i terminálové CLI.</p>
-      <p>Měl vyřešit jednu konkrétní věc: spojit konverzaci se skutečnou prací na projektu tak, aby šlo zpětně dohledat zadání, průběžné zprávy, změny souborů i výstupy.</p>
+    <div class="why-q rv">
+      <div>
+        <h3>Co Melaris je</h3>
+        <p>Místní pracovní prostor pro AI agenty. Připojíš vlastní model, zadáš práci ve webu nebo v terminálu a Mel ji rozdělí specialistům. Zadání, průběžné zprávy, změny souborů i výstupy zůstávají dohledatelné.</p>
+      </div>
+      <div>
+        <h3>Na co je stavěný</h3>
+        <p>Na práci ve skutečném projektu, srozumitelné ovládání a podklady, podle kterých lze výsledek posoudit. Má vlastní agentní smyčku v Node.js a nad jedním místním jádrem stojí webové rozhraní i terminálové CLI.</p>
+      </div>
+      <div>
+        <h3>Proč vznikl</h3>
+        <p>Melaris vzniká jako maturitní projekt na téma vývoj LLM harnessu. Měl vyřešit jednu konkrétní věc: spojit konverzaci se skutečnou prací na projektu tak, aby šlo zpětně dohledat zadání, průběžné zprávy, změny souborů i výstupy.</p>
+      </div>
     </div>
-    <div class="rv">
-      <h3>Co harness v Melarisu dělá</h3>
+    <details class="why-list rv" data-collapse open>
+      <summary><h3>Co harness v Melarisu dělá</h3></summary>
       <ul class="plain">
         <li>Volá model, ověřuje jeho návrhy nástrojů a vrací mu výsledky.</li>
         <li>Určuje, které nástroje a složky jsou v daném běhu povolené.</li>
@@ -127,18 +137,18 @@
         <li>Před zápisem ukládá kontrolní bod, takže změny souboru jdou vrátit.</li>
         <li>Průběžně ukládá stav. Přerušenou úlohu navážeš tlačítkem Pokračovat.</li>
       </ul>
-    </div>
+    </details>
   </div>
   <h3 class="name-title rv">Co znamená jméno</h3>
-  <dl class="name rv">
-    <div><dt>M</dt><dd>Multi-agent</dd></div>
-    <div><dt>E</dt><dd>Efficient</dd></div>
-    <div><dt>L</dt><dd>Lightweight</dd></div>
-    <div><dt>A</dt><dd>Autonomous</dd></div>
-    <div><dt>R</dt><dd>Rapid</dd></div>
-    <div><dt>I</dt><dd>Intelligent</dd></div>
-    <div><dt>S</dt><dd>System</dd></div>
-  </dl>
+  <div class="name rv" data-name>
+    <div class="nm" id="nm-m"><h4 class="nm-t"><span class="nm-l">M</span> Multi-agent</h4><div class="nm-b"><p>Práci dostanou specialisté s vlastním zaměřením místo jednoho dlouhého chatu. V režimu Mel + tým přidělí Mel úkoly z katalogu 23 specialistů, nejvýš třem najednou, a všechno vidíš ve společném chatu.</p><p class="nm-lim"><b>Hranice.</b> Profily sdílejí oprávnění i rozpočet úlohy a kvalita závisí na modelu. Do jednoho souboru zapisují po jednom a Mel automaticky nevolá všechny.</p></div></div>
+    <div class="nm" id="nm-e"><h4 class="nm-t"><span class="nm-l">E</span> Efficient</h4><div class="nm-b"><p>Model nemá dostávat pořád dokola totéž. Melaris zhušťuje dlouhý kontext a omezuje opakované podklady stránkováním a odkazy na dřívější úplné kopie. Spotřebu vidíš a nastavíš na ni denní a měsíční strop.</p><p class="nm-lim"><b>Hranice.</b> Chybějící údaj zůstává neznámý a konkrétní úspora není zaručená.</p></div></div>
+    <div class="nm" id="nm-l"><h4 class="nm-t"><span class="nm-l">L</span> Lightweight</h4><div class="nm-b"><p>Melaris běží v Node.js na tvém počítači a server poslouchá jen na 127.0.0.1. Web nepotřebuje samostatný build. Povinný cloud není: model může přes Ollamu běžet přímo u tebe.</p><p class="nm-lim"><b>Hranice.</b> Lehký je Melaris sám, ne model. Místní model potřebuje vlastní výkon a se vzdáleným poskytovatelem k němu odchází potřebné zadání a kontext. S jinými nástroji jsme ho neměřili.</p></div></div>
+    <div class="nm" id="nm-a"><h4 class="nm-t"><span class="nm-l">A</span> Autonomous</h4><div class="nm-b"><p>Úloha může běžet, i když nejsi u počítače: plánovač, práce na cíli po kolech a playbooky. Přerušenou práci navážeš tlačítkem Pokračovat a Zastavit vše ukončí, co běží.</p><p class="nm-lim"><b>Hranice.</b> Jen s pojistkami. Příkazy v shellu mimo krátký seznam čtecích příkazů schvaluje člověk, plánované úlohy smí jen číst a odpovídat, produkce a finance jsou odmítnuté. Plán běží jen při spuštěném Melarisu.</p></div></div>
+    <div class="nm" id="nm-r"><h4 class="nm-t"><span class="nm-l">R</span> Rapid</h4><div class="nm-b"><p>Práce nemá čekat na další zprávu. Do běžící úlohy přidáš zprávu do fronty, souběžně běží jedna až čtyři úlohy a běžné otázky na ovládání Mel pozná bez volání AI.</p><p class="nm-lim"><b>Hranice.</b> Rychlost celé úlohy nemáme změřenou a záleží hlavně na modelu. Výchozí je jedna úloha najednou. Tohle písmeno je zatím spíš záměr než doložená vlastnost.</p></div></div>
+    <div class="nm" id="nm-i"><h4 class="nm-t"><span class="nm-l">I</span> Intelligent</h4><div class="nm-b"><p>Inteligence je v modelu, který si připojíš. Melaris mu dává podklady: před prací si model musí načíst skill, návod na konkrétní druh práce, a Melaris ověří, že ho opravdu dostal. Mozek projektu drží paměť a rozhodnutí.</p><p class="nm-lim"><b>Hranice.</b> Melaris model nedodává a kvalita závisí na modelu. Do dlouhodobé paměti Mel sám nepíše, jen navrhne a ty schválíš.</p></div></div>
+    <div class="nm" id="nm-s"><h4 class="nm-t"><span class="nm-l">S</span> System</h4><div class="nm-b"><p>Není to jen chat, ale program kolem modelu: agentní smyčka, oprávnění, rozpočty, kontrolní body, audit, nástěnka a zálohy nad jedním jádrem, které sdílí web i terminál.</p><p class="nm-lim"><b>Hranice.</b> Je to funkční prototyp ve vývoji v testovacím provozu. Produkční hosting ani izolovaný serverový režim hotové nejsou.</p></div></div>
+  </div>
   <p class="note rv">Dřívější název projektu byl Elaris. M přibylo kvůli týmu agentů: znamená Multi-agent.</p>
 </section>
 
@@ -147,7 +157,7 @@
     <h2 id="jak-title">Jak funguje jeden běh</h2>
     <p>Stejný postup platí ve webu i v terminálu.</p>
   </div>
-  <ol class="steps">
+  <ol class="steps" aria-label="Kroky jednoho běhu">
     <li class="rv">
       <h3>Napíšeš zadání</h3>
       <p>Připojíš složku projektu a vybereš model. Běh si hned při startu zapíše, jaká má oprávnění, nástroje a síť.</p>
@@ -456,38 +466,31 @@
 
 <section class="cmp" id="srovnani" aria-labelledby="srovnani-title">
   <h2 id="srovnani-title" class="rv">Srovnání s běžným chatem</h2>
-  <div class="table-wrap rv">
-  <table class="tb3">
-    <thead><tr><th scope="col">Oblast</th><th scope="col">Běžný chat s AI obvykle</th><th scope="col">Melaris</th></tr></thead>
-    <tbody>
-      <tr><th scope="row">Soubory</th><td data-label="Běžný chat">Kopíruješ kusy textu nebo nahráváš přílohy.</td><td data-label="Melaris">Připojená složka s oprávněním pro konkrétní projekt.</td></tr>
-      <tr><th scope="row">Agenti</th><td data-label="Běžný chat">Jeden asistent.</td><td data-label="Melaris">Mel a specialisté v jednom vlákně, nejvýš tři souběžně.</td></tr>
-      <tr><th scope="row">Průběh</th><td data-label="Běžný chat">Hlavně konečná odpověď.</td><td data-label="Melaris">Plán, použité nástroje, diff a stav každého běhu.</td></tr>
-      <tr><th scope="row">Návrat</th><td data-label="Běžný chat">Ručně.</td><td data-label="Melaris">Kontrolní body a oddělená kopie na vlastní větvi.</td></tr>
-      <tr><th scope="row">Model</th><td data-label="Běžný chat">Modely jednoho poskytovatele.</td><td data-label="Melaris">Předplatná, API, OmniRoute nebo model na počítači.</td></tr>
-      <tr><th scope="row">Bez dozoru</th><td data-label="Běžný chat">Práce čeká na tvoji další zprávu.</td><td data-label="Melaris">Plán, práce na cíli a playbooky se stropy a karanténou.</td></tr>
-      <tr><th scope="row">Začátek</th><td data-label="Běžný chat">Otevřeš web a píšeš.</td><td data-label="Melaris">Potřebuješ pozvánku nebo instalaci a vlastní účet u služby. Je to prototyp.</td></tr>
-    </tbody>
-  </table>
+  <div class="vs">
+    <div class="vs-head" aria-hidden="true"><span></span><span>Běžný chat s AI obvykle</span><span>Melaris</span></div>
+    <ul class="vs-list">
+    <li class="vs-row rv"><h3>Soubory</h3><p class="vs-a"><span class="vs-tag">Běžný chat</span>Kopíruješ kusy textu nebo nahráváš přílohy.</p><p class="vs-b"><span class="vs-tag">Melaris</span>Připojená složka s oprávněním pro konkrétní projekt.</p></li>
+    <li class="vs-row rv"><h3>Agenti</h3><p class="vs-a"><span class="vs-tag">Běžný chat</span>Jeden asistent.</p><p class="vs-b"><span class="vs-tag">Melaris</span>Mel a specialisté v jednom vlákně, nejvýš tři souběžně.</p></li>
+    <li class="vs-row rv"><h3>Průběh</h3><p class="vs-a"><span class="vs-tag">Běžný chat</span>Hlavně konečná odpověď.</p><p class="vs-b"><span class="vs-tag">Melaris</span>Plán, použité nástroje, diff a stav každého běhu.</p></li>
+    <li class="vs-row rv"><h3>Návrat</h3><p class="vs-a"><span class="vs-tag">Běžný chat</span>Ručně.</p><p class="vs-b"><span class="vs-tag">Melaris</span>Kontrolní body a oddělená kopie na vlastní větvi.</p></li>
+    <li class="vs-row rv"><h3>Model</h3><p class="vs-a"><span class="vs-tag">Běžný chat</span>Modely jednoho poskytovatele.</p><p class="vs-b"><span class="vs-tag">Melaris</span>Předplatná, API, OmniRoute nebo model na počítači.</p></li>
+    <li class="vs-row rv"><h3>Bez dozoru</h3><p class="vs-a"><span class="vs-tag">Běžný chat</span>Práce čeká na tvoji další zprávu.</p><p class="vs-b"><span class="vs-tag">Melaris</span>Plán, práce na cíli a playbooky se stropy a karanténou.</p></li>
+    <li class="vs-row rv"><h3>Začátek</h3><p class="vs-a"><span class="vs-tag">Běžný chat</span>Otevřeš web a píšeš.</p><p class="vs-b"><span class="vs-tag">Melaris</span>Potřebuješ pozvánku nebo instalaci a vlastní účet u služby. Je to prototyp.</p></li>
+    </ul>
   </div>
 </section>
 
 <section class="value" id="vyhody" aria-labelledby="vyhody-title">
   <h2 id="vyhody-title" class="rv">Výhody a s čím počítat</h2>
   <p class="value-intro rv">Melaris použij, když chceš agenty pustit na vlastní projekt a přitom vidět, co dělají. Ke každé výhodě patří i její hranice.</p>
-  <div class="table-wrap rv">
-  <table>
-    <thead><tr><th scope="col">Co získáš</th><th scope="col">S čím počítat</th></tr></thead>
-    <tbody>
-      <tr><td data-label="Co získáš"><b>Tým místo jednoho chatu.</b> Mel přidělí práci specialistům a jejich zprávy jsou v jedné konverzaci s autorem a časem.</td><td data-label="S čím počítat">Kvalita závisí na modelu. Profily sdílejí oprávnění i rozpočet úlohy.</td></tr>
-      <tr><td data-label="Co získáš"><b>Vlastní volba modelu.</b> Předplatná, API, OmniRoute i Ollama. Na jednoho poskytovatele nejsi vázaný.</td><td data-label="S čím počítat">Potřebuješ vlastní model nebo účet. Podmínky a limity poskytovatele platí dál.</td></tr>
-      <tr><td data-label="Co získáš"><b>Práce jde zkontrolovat.</b> Diff ke každému změněnému souboru, kontrolní body a tlačítko pro vrácení změn.</td><td data-label="S čím počítat">Soubory nad 2 MB kontrolní bod nemají. Zápisy shellem a terminálové relace taky ne.</td></tr>
-      <tr><td data-label="Co získáš"><b>Data máš u sebe.</b> Na tvém počítači běží aplikace, projekty i historie a server poslouchá jen na 127.0.0.1. Vzdálený přístup je výchozím stavem vypnutý.</td><td data-label="S čím počítat">Se vzdáleným poskytovatelem AI k němu odchází potřebné zadání a kontext.</td></tr>
-      <tr><td data-label="Co získáš"><b>Provoz bez dozoru s pojistkami.</b> Plánovač, Zastavit vše, strop spotřeby a karanténa úlohy, která třikrát po sobě selže.</td><td data-label="S čím počítat">Plán běží jen při spuštěném Melarisu. Po restartu se nic nespouští samo, navázání potvrzuješ ty.</td></tr>
-      <tr><td data-label="Co získáš"><b>Spotřeba je čitelná.</b> Vidíš dostupné údaje o tokenech a nastavíš denní a měsíční strop.</td><td data-label="S čím počítat">Chybějící údaj zůstává neznámý. Konkrétní úspora není zaručená.</td></tr>
-    </tbody>
-  </table>
-  </div>
+  <ul class="adv" aria-label="Výhody a jejich hranice">
+    <li class="adv-c rv"><h3>Tým místo jednoho chatu.</h3><p>Mel přidělí práci specialistům a jejich zprávy jsou v jedné konverzaci s autorem a časem.</p><div class="adv-lim"><b>S čím počítat</b><p>Kvalita závisí na modelu. Profily sdílejí oprávnění i rozpočet úlohy.</p></div></li>
+    <li class="adv-c rv"><h3>Vlastní volba modelu.</h3><p>Předplatná, API, OmniRoute i Ollama. Na jednoho poskytovatele nejsi vázaný.</p><div class="adv-lim"><b>S čím počítat</b><p>Potřebuješ vlastní model nebo účet. Podmínky a limity poskytovatele platí dál.</p></div></li>
+    <li class="adv-c rv"><h3>Práce jde zkontrolovat.</h3><p>Diff ke každému změněnému souboru, kontrolní body a tlačítko pro vrácení změn.</p><div class="adv-lim"><b>S čím počítat</b><p>Soubory nad 2 MB kontrolní bod nemají. Zápisy shellem a terminálové relace taky ne.</p></div></li>
+    <li class="adv-c rv"><h3>Data máš u sebe.</h3><p>Na tvém počítači běží aplikace, projekty i historie a server poslouchá jen na 127.0.0.1. Vzdálený přístup je výchozím stavem vypnutý.</p><div class="adv-lim"><b>S čím počítat</b><p>Se vzdáleným poskytovatelem AI k němu odchází potřebné zadání a kontext.</p></div></li>
+    <li class="adv-c rv"><h3>Provoz bez dozoru s pojistkami.</h3><p>Plánovač, Zastavit vše, strop spotřeby a karanténa úlohy, která třikrát po sobě selže.</p><div class="adv-lim"><b>S čím počítat</b><p>Plán běží jen při spuštěném Melarisu. Po restartu se nic nespouští samo, navázání potvrzuješ ty.</p></div></li>
+    <li class="adv-c rv"><h3>Spotřeba je čitelná.</h3><p>Vidíš dostupné údaje o tokenech a nastavíš denní a měsíční strop.</p><div class="adv-lim"><b>S čím počítat</b><p>Chybějící údaj zůstává neznámý. Konkrétní úspora není zaručená.</p></div></li>
+  </ul>
 </section>
 
 <section class="mel" id="mel" aria-labelledby="mel-title">

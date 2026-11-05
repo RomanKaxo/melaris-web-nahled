@@ -941,6 +941,71 @@
     register(orb, widget);
   }
 
+  // Dlouhé doplňky jsou na telefonu sbalené, jinak otevřené. Bez JS zůstávají otevřené.
+  function initCollapse() {
+    var items = Array.prototype.slice.call(document.querySelectorAll('[data-collapse]'));
+    var phone = window.matchMedia('(max-width:719px)');
+    var rows = Array.prototype.slice.call(document.querySelectorAll('.steps,.adv'));
+    function apply() {
+      items.forEach(function (item) { item.open = !phone.matches; });
+      // Vodorovná řada na telefonu musí jít posouvat i klávesnicí.
+      rows.forEach(function (row) {
+        if (phone.matches) row.setAttribute('tabindex', '0');
+        else row.removeAttribute('tabindex');
+      });
+    }
+    apply();
+    if (phone.addEventListener) phone.addEventListener('change', apply);
+  }
+
+  // Jméno: každé písmeno ukáže své odůvodnění a jeho hranice. Bez JS jsou vidět všechna.
+  function initName() {
+    var box = document.querySelector('[data-name]');
+    if (!box) return;
+    var items = Array.prototype.slice.call(box.querySelectorAll('.nm'));
+    var row = document.createElement('div');
+    row.className = 'nm-row';
+    row.setAttribute('role', 'group');
+    row.setAttribute('aria-label', 'Písmena jména Melaris');
+    var stage = document.createElement('div');
+    stage.className = 'nm-stage';
+    var live = document.createElement('p');
+    live.className = 'vh';
+    live.setAttribute('aria-live', 'polite');
+    var buttons = items.map(function (item, i) {
+      var button = document.createElement('button');
+      var letter = document.createElement('b');
+      var word = document.createElement('span');
+      var name = item.querySelector('.nm-t').textContent.trim();
+      letter.textContent = name.charAt(0);
+      word.textContent = name.slice(2);
+      button.type = 'button';
+      button.className = 'nm-btn';
+      button.setAttribute('aria-controls', item.id);
+      button.appendChild(letter);
+      button.appendChild(word);
+      button.addEventListener('click', function () { show(i, true); });
+      row.appendChild(button);
+      stage.appendChild(item);
+      return button;
+    });
+    function show(index, animate) {
+      items.forEach(function (item, i) {
+        var on = i === index;
+        item.classList.toggle('on', on);
+        buttons[i].setAttribute('aria-pressed', String(on));
+        if (on && animate) {
+          live.textContent = item.querySelector('.nm-t').textContent.trim();
+          if (motionOn() && item.animate) item.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 320, easing: 'cubic-bezier(.22,1,.36,1)' });
+        }
+      });
+    }
+    box.appendChild(row);
+    box.appendChild(stage);
+    box.appendChild(live);
+    show(0, false);
+  }
+
   // Mel: mrká, rozhlíží se, sleduje kurzor a po kliknutí poskočí.
   function initMel() {
     var button = document.getElementById('mel-btn');
@@ -1104,7 +1169,7 @@
   }
 
   // Jedna chyba, třeba starý main.js z cache s novým HTML, nesmí zastavit zbytek stránky.
-  [initBar, initTheme, initMotionToggle, initReveal, initVse, initHero, initFlow, initHub, initGates, initUiPanel, initMel].forEach(function (init) {
+  [initBar, initTheme, initMotionToggle, initReveal, initVse, initHero, initFlow, initHub, initGates, initUiPanel, initMel, initName, initCollapse].forEach(function (init) {
     try { init(); } catch (error) { if (window.console) console.error(error); }
   });
   syncMotion();
