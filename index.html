@@ -171,15 +171,17 @@
 </section>
 
 <section class="features" id="funkce" aria-labelledby="funkce-title">
-  <div class="features-head rv">
-    <p class="tag">Živé schéma</p>
-    <h2 id="funkce-title">Funkce v pohybu</h2>
-    <p>Schémata popisují skutečné chování Melarisu. Pohyb a čísla v nich jsou ilustrační, nejsou to živá data z provozu.</p>
+  <div class="features-head">
+    <h2 id="funkce-title" class="rv">Funkce v pohybu</h2>
+    <p class="rv">Schémata popisují skutečné chování Melarisu. Pohyb a čísla v nich jsou ilustrační, nejsou to živá data z provozu.</p>
   </div>
 
-  <div class="bento">
-    <article class="card card-wide rv" aria-labelledby="f1-title">
-      <span class="corner tl" aria-hidden="true"></span><span class="corner tr" aria-hidden="true"></span><span class="corner bl" aria-hidden="true"></span><span class="corner br" aria-hidden="true"></span>
+  <article class="chap chap-stack" aria-labelledby="f1-title">
+    <div class="chap-text rv">
+      <div class="chap-title"><span class="num" aria-hidden="true">1</span><h3 id="f1-title">Lidé a úkoly dovnitř, ověřitelné výstupy ven</h3></div>
+      <p>Práci zadá člověk ve webu nebo v terminálu, přijde z plánovače, z telefonu přes Telegram nebo z karty na nástěnce. Ven jdou změny souborů, větev v oddělené kopii a souhrn. Čárkovaně je to, co ještě neběží.</p>
+    </div>
+    <div class="panel rv">
       <div class="schema flow" id="flow" role="img" aria-label="Schéma: zadání z webu, terminálu, plánovače, Telegramu a nástěnky jdou do Melarisu. Z něj vycházejí změny souborů, pracovní větev a denní souhrn. Draft PR je zatím vypnutý.">
         <svg class="wires" aria-hidden="true" focusable="false"></svg>
         <ul class="flow-in">
@@ -203,12 +205,16 @@
           <div class="planned" data-planned><b>Draft PR</b><span>Modul je připravený, zatím vypnutý</span></div>
         </div>
       </div>
-      <h3 id="f1-title">Lidé a úkoly dovnitř, ověřitelné výstupy ven</h3>
-      <p>Práci zadá člověk ve webu nebo v terminálu, přijde z plánovače, z telefonu přes Telegram nebo z karty na nástěnce. Ven jdou změny souborů, větev v oddělené kopii a souhrn. Čárkovaně je to, co ještě neběží.</p>
-    </article>
+    </div>
+  </article>
 
-    <article class="card rv" aria-labelledby="f2-title">
-      <span class="corner tl" aria-hidden="true"></span><span class="corner tr" aria-hidden="true"></span><span class="corner bl" aria-hidden="true"></span><span class="corner br" aria-hidden="true"></span>
+  <article class="chap chap-split" aria-labelledby="f2-title">
+    <div class="chap-text rv">
+      <div class="chap-title"><span class="num" aria-hidden="true">2</span><h3 id="f2-title">Tvoje předplatná a modely</h3></div>
+      <p>Předplatná Claude Code, Codex a Grok Build běží v originálním programu poskytovatele. Další služby připojíš přes OmniRoute, Ollamu nebo API klíč. Zvolený model se při chybě sám nezmění.</p>
+      <p class="sync" id="hub-sync" aria-live="off"><b id="hub-name">Claude Code</b><span id="hub-detail">Originální Claude Code na tvém předplatném Claude. Přihlášení děláš sám.</span></p>
+    </div>
+    <div class="panel rv">
       <div class="schema hub" id="hub" role="group" aria-label="Připojení modelů">
         <svg class="wires" aria-hidden="true" focusable="false"></svg>
         <div class="hub-col">
@@ -229,23 +235,25 @@
           <button type="button" class="tile" data-detail="OpenAI, Anthropic, Perplexity, xAI, Mistral, DeepSeek, Gemini, OpenRouter nebo Groq."><svg class="key-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="4.5"/><path d="m11.5 11.5 8-8M16 7l3 3"/></svg><span>API klíč</span></button>
         </div>
       </div>
-      <p class="sync" id="hub-sync" aria-live="off"><span class="sync-line">připojení · <b id="hub-name">Claude Code</b></span><span id="hub-detail">Originální Claude Code na tvém předplatném Claude. Přihlášení děláš sám.</span></p>
-      <h3 id="f2-title">Tvoje předplatná a modely</h3>
-      <p>Předplatná Claude Code, Codex a Grok Build běží v originálním programu poskytovatele. Další služby připojíš přes OmniRoute, Ollamu nebo API klíč. Zvolený model se při chybě sám nezmění.</p>
-    </article>
+    </div>
+  </article>
 
-    <article class="card rv" aria-labelledby="f3-title">
-      <span class="corner tl" aria-hidden="true"></span><span class="corner tr" aria-hidden="true"></span><span class="corner bl" aria-hidden="true"></span><span class="corner br" aria-hidden="true"></span>
+  <article class="chap chap-stack" aria-labelledby="f3-title">
+    <div class="chap-text rv">
+      <div class="chap-title"><span class="num" aria-hidden="true">3</span><h3 id="f3-title">Pojistky v běhu</h3></div>
+      <p>Přejeď po křivce nebo použij posuvník a šipky. U každého kroku je napsané, co platí a co je zatím vypnuté.</p>
+    </div>
+    <div class="panel rv">
       <div class="schema gates" id="gates">
         <div class="gates-chart" data-chart>
-          <svg viewBox="0 0 600 260" aria-hidden="true" focusable="false">
-            <clipPath id="gate-clip"><rect data-clip x="0" y="0" width="40" height="260"/></clipPath>
-            <path class="grid" d="M24 66H576M24 130H576M24 194H576"/>
-            <path class="gate-human" d="M340 16V244"/>
+          <svg aria-hidden="true" focusable="false">
+            <clipPath id="gate-clip"><rect data-clip x="0" y="0" width="40" height="100%"/></clipPath>
+            <path class="gate-human" data-human/>
             <path class="area" data-area clip-path="url(#gate-clip)"/>
             <path class="curve" data-curve/>
             <path class="curve-on" data-curve-on/>
             <g data-marks></g>
+            <g data-labels></g>
             <circle class="head-ring" data-head-ring r="15"/>
             <circle class="head" data-head r="6"/>
           </svg>
@@ -259,98 +267,61 @@
           <li><h4>Oddělený běh</h4><p>Úloha může pracovat ve vlastní kopii na větvi <code>melaris/run-…</code>. Serverový režim v kontejneru bez sítě je napsaný, ale zatím vypnutý a v přejímce.</p></li>
           <li><h4>Schválení člověkem</h4><p>Příkazy čekají na souhlas. Kritickou akci neschválí sám zadavatel, ani když je vlastník. Produkce a finance jsou odmítnuté.</p></li>
           <li><h4>Audit</h4><p>Schválení, změny oprávnění a pauzy jdou do řetězeného záznamu s HMAC. Příkaz <code>melaris audit</code> ho ověří a nahlásí přerušení.</p></li>
-          <li><h4>Výsledek</h4><p>Změny vidíš jako diff a sloučíš je, nebo zahodíš. Nedokončená práce se neoznačí jako hotová.</p></li>
-        </ol>
+          <li><h4>Výsledek</h4><p>Změny vidíš jako diff a sloučíš je, nebo zahodíš. Nedokončená práce se neoznačí jako hotová.</p></li></ol>
       </div>
-      <h3 id="f3-title">Pojistky v běhu</h3>
-      <p>Přejeď po křivce nebo použij posuvník a šipky. U každého kroku je napsané, co platí a co je zatím vypnuté.</p>
-    </article>
-  </div>
+    </div>
+  </article>
 </section>
 
 
 <section class="ui" id="ukazky" aria-labelledby="ukazky-title">
   <div class="ui-panel" data-ui-panel>
-  <div class="sec-head rv">
-    <h2 id="ukazky-title">Jak rozhraní vypadá</h2>
-    <p>Zjednodušené kresby skutečných obrazovek. Popisky jsou z aplikace, obsah a grafy jsou ilustrační.</p>
-  </div>
+  <h2 id="ukazky-title" class="rv">Rozhraní.</h2>
   <ol class="ui-list">
     <li>
-      <div class="ui-item rv"><h3><button type="button" class="ui-btn" id="ui-b1" aria-controls="ui-f1"><span class="ui-n" aria-hidden="true">1</span><span>Editor chatu</span></button></h3><p>Napíšeš zadání a vybereš režim: Mel + tým, běžná odpověď, nebo plán a kontrola.</p></div>
-      <figure class="ui-fig" id="ui-f1"><svg viewBox="0 0 340 190" role="img" aria-label="Kresba editoru chatu s popiskem Tvoje zadání, třemi režimy práce a tlačítkem Odeslat.">
-      <rect class="u-bg" width="340" height="190"/><text class="u-m" x="16" y="26">Tvoje zadání</text>
-      <rect class="u-pn" x="16" y="36" width="308" height="62"/><text class="u-t" x="28" y="60">Oprav přihlašovací formulář</text><text class="u-m" x="28" y="80">a ověř ho v prohlížeči</text>
-      <rect class="u-on" x="16" y="108" width="84" height="26"/><text class="u-a" x="26" y="125">Mel + tým</text>
-      <rect class="u-pn" x="106" y="108" width="114" height="26"/><text class="u-t" x="114" y="125">Běžná odpověď</text>
-      <rect class="u-pn" x="226" y="108" width="98" height="26"/><text class="u-t" x="232" y="125">Plán a kontrola</text>
-      <text class="u-m" x="16" y="166">Projekt · Další volby</text><rect class="u-fx" x="248" y="146" width="76" height="30"/><text class="u-d" x="262" y="166">Odeslat</text>
-    </svg></figure>
+      <h3><button type="button" class="ui-btn rv rv-s" id="ui-b1" aria-controls="ui-f1"><span class="ui-n" aria-hidden="true">1</span><span class="ui-name">Editor chatu</span></button></h3>
+      <p class="ui-desc">Napíšeš zadání a vybereš režim: Mel + tým, běžná odpověď, nebo plán a kontrola.</p>
+      <figure class="ui-fig" id="ui-f1"><svg viewBox="0 0 520 390" role="img" aria-label="Kresba editoru chatu s popiskem Tvoje zadání, třemi režimy práce a tlačítkem Odeslat."><use href="#ui-chrome"/><use href="#ui-win"/><use href="#ui-rail"/><circle class="u-rail-on" cx="68" cy="96" r="14"/><use href="#ui-rail-icons"/><text class="u-m u-s" x="100" y="66">Chat</text><text class="u-h" x="100" y="96">Oprava přihlášení</text><text class="u-a u-s" x="506" y="96" text-anchor="end">Probíhá</text><rect class="u-me" x="258" y="106" width="250" height="44" rx="10"/><text class="u-t" x="270" y="124">Oprav přihlašovací formulář</text><text class="u-t" x="270" y="140">a ověř ho v prohlížeči</text><use href="#m-mark" transform="translate(100 158) scale(.42) translate(-3 -5)"/><text class="u-t u-b" x="124" y="170">Mel</text><text class="u-t" x="124" y="187">Iris navrhne formulář, Kern upraví kód.</text><circle class="u-av" cx="109" cy="206" r="8"/><text class="u-t u-b" x="124" y="203">Kern</text><text class="u-t" x="124" y="219">Upravuji soubor prihlaseni.html.</text><text class="u-m" x="124" y="235">Do jednoho souboru zapisují po jednom.</text><rect class="u-pn" x="100" y="248" width="408" height="112" rx="10"/><text class="u-m u-s" x="114" y="268">Tvoje zadání</text><text class="u-t" x="114" y="288">Přidej i hlášku o špatném kódu</text><rect class="u-fx" x="306" y="277" width="2" height="15"/><rect class="u-on" x="114" y="300" width="76" height="24" rx="12"/><text class="u-a u-s" x="125" y="316">Mel + tým</text><rect class="u-pn" x="196" y="300" width="108" height="24" rx="12"/><text class="u-t u-s" x="207" y="316">Běžná odpověď</text><rect class="u-pn" x="310" y="300" width="104" height="24" rx="12"/><text class="u-t u-s" x="321" y="316">Plán a kontrola</text><text class="u-m u-s" x="114" y="348">Projekt · Další volby</text><rect class="u-fx" x="434" y="328" width="62" height="26" rx="8"/><text class="u-d" x="443" y="345">Odeslat</text><use href="#ui-fade"/></svg></figure>
     </li>
     <li>
-      <div class="ui-item rv"><h3><button type="button" class="ui-btn" id="ui-b2" aria-controls="ui-f2"><span class="ui-n" aria-hidden="true">2</span><span>Plán a změny v chatu</span></button></h3><p>Vidíš úkoly specialistů, jejich stav i změněné soubory.</p></div>
-      <figure class="ui-fig" id="ui-f2"><svg viewBox="0 0 340 190" role="img" aria-label="Kresba plánu agenta: tři úkoly specialistů se stavy Hotovo, Probíhá a Čeká a řádek se změněným souborem.">
-      <rect class="u-bg" width="340" height="190"/><text class="u-t" x="16" y="26">Plán agenta</text>
-      <g><path class="u-fxp" d="m22 42 6 6-6 6-6-6z"/><text class="u-t" x="38" y="53">Iris: návrh formuláře</text><text class="u-m" x="276" y="53">Hotovo</text></g>
-      <g><path class="u-fxp" d="m22 72 6 6-6 6-6-6z"/><text class="u-t" x="38" y="83">Kern: úprava kódu</text><text class="u-a" x="270" y="83">Probíhá</text></g>
-      <g><path class="u-lnp" d="m22 102 6 6-6 6-6-6z"/><text class="u-m" x="38" y="113">Kontrola v prohlížeči</text><text class="u-m" x="290" y="113">Čeká</text></g>
-      <rect class="u-pn" x="16" y="128" width="308" height="48"/><text class="u-m" x="28" y="147">Změněný soubor</text><text class="u-a" x="28" y="166">+ řádek</text><text class="u-m" x="86" y="166">− řádek</text>
-    </svg></figure>
+      <h3><button type="button" class="ui-btn rv rv-s" id="ui-b2" aria-controls="ui-f2"><span class="ui-n" aria-hidden="true">2</span><span class="ui-name">Plán a změny v chatu</span></button></h3>
+      <p class="ui-desc">Vidíš úkoly specialistů, jejich stav i změněné soubory.</p>
+      <figure class="ui-fig" id="ui-f2"><svg viewBox="0 0 520 390" role="img" aria-label="Kresba plánu agenta: úkoly specialistů se stavy Hotovo, Probíhá a Čeká a změněný soubor s diffem."><use href="#ui-chrome"/><use href="#ui-win"/><use href="#ui-rail"/><circle class="u-rail-on" cx="68" cy="96" r="14"/><use href="#ui-rail-icons"/><text class="u-m u-s" x="100" y="66">Chat</text><text class="u-h" x="100" y="96">Plán agenta</text><circle class="u-fx" cx="108" cy="114" r="5"/><text class="u-t" x="122" y="118">Iris: návrh formuláře</text><text class="u-m" x="506" y="118" text-anchor="end">Hotovo</text><circle class="u-fx" cx="108" cy="136" r="5"/><text class="u-t" x="122" y="140">Kern: úprava kódu</text><text class="u-a" x="506" y="140" text-anchor="end">Probíhá</text><circle class="u-lnp" cx="108" cy="158" r="5"/><text class="u-m" x="122" y="162">Kontrola v prohlížeči</text><text class="u-m" x="506" y="162" text-anchor="end">Čeká</text><circle class="u-lnp" cx="108" cy="180" r="5"/><text class="u-m" x="122" y="184">Souhrn změn</text><text class="u-m" x="506" y="184" text-anchor="end">Čeká</text><rect class="u-pn" x="100" y="198" width="408" height="146" rx="10"/><text class="u-m u-s" x="114" y="218">Změněný soubor</text><text class="u-t u-s" x="218" y="218">prihlaseni.html</text><text class="u-a u-s" x="460" y="218">+3 −1</text><rect class="u-del" x="101" y="228" width="406" height="20"/><rect class="u-add" x="101" y="248" width="406" height="60"/><text class="u-c u-m" x="114" y="242">− &lt;button disabled&gt;Přihlásit&lt;/button&gt;</text><text class="u-c" x="114" y="262">+ &lt;label for="kod"&gt;Kód z e-mailu&lt;/label&gt;</text><text class="u-c" x="114" y="280">+ &lt;input id="kod" autocomplete="one-time-code"&gt;</text><text class="u-c" x="114" y="298">+ &lt;button type="submit"&gt;Přihlásit&lt;/button&gt;</text><rect class="u-pn" x="114" y="314" width="96" height="24" rx="8"/><text class="u-t u-s" x="125" y="330">Vrátit změny</text><use href="#ui-fade"/></svg></figure>
     </li>
     <li>
-      <div class="ui-item rv"><h3><button type="button" class="ui-btn" id="ui-b3" aria-controls="ui-f3"><span class="ui-n" aria-hidden="true">3</span><span>Nástěnka úkolů</span></button></h3><p>Karty procházejí sloupci K převzetí, Rozpracováno, Ke kontrole a Hotovo.</p></div>
-      <figure class="ui-fig" id="ui-f3"><svg viewBox="0 0 340 190" role="img" aria-label="Kresba nástěnky se sloupci K převzetí, Rozpracováno, Ke kontrole a Hotovo.">
-      <rect class="u-bg" width="340" height="190"/>
-      <text class="u-m" x="12" y="24">K převzetí</text><text class="u-m" x="84" y="24">Rozpracováno</text><text class="u-m" x="186" y="24">Ke kontrole</text><text class="u-m" x="276" y="24">Hotovo</text>
-      <rect class="u-pn" x="12" y="34" width="64" height="44"/><rect class="u-pn" x="12" y="84" width="64" height="44"/><rect class="u-pn" x="12" y="134" width="64" height="44"/>
-      <rect class="u-on" x="84" y="34" width="94" height="44"/><rect class="u-pn" x="84" y="84" width="94" height="44"/>
-      <rect class="u-pn" x="186" y="34" width="82" height="44"/>
-      <rect class="u-pn" x="276" y="34" width="52" height="44"/><rect class="u-pn" x="276" y="84" width="52" height="44"/>
-      <text class="u-t" x="94" y="60">Tvoje karta</text>
-    </svg></figure>
+      <h3><button type="button" class="ui-btn rv rv-s" id="ui-b3" aria-controls="ui-f3"><span class="ui-n" aria-hidden="true">3</span><span class="ui-name">Nástěnka úkolů</span></button></h3>
+      <p class="ui-desc">Karty procházejí sloupci K převzetí, Rozpracováno, Ke kontrole a Hotovo.</p>
+      <figure class="ui-fig" id="ui-f3"><svg viewBox="0 0 520 390" role="img" aria-label="Kresba nástěnky se sloupci K převzetí, Rozpracováno, Ke kontrole a Hotovo."><use href="#ui-chrome"/><use href="#ui-win"/><use href="#ui-rail"/><circle class="u-rail-on" cx="68" cy="168" r="14"/><use href="#ui-rail-icons"/><text class="u-m u-s" x="100" y="66">Nástěnka</text><text class="u-t u-s u-b" x="100" y="96">K převzetí</text><text class="u-m u-s" x="204" y="96" text-anchor="end">3</text><rect class="u-pn" x="100" y="106" width="104" height="62" rx="8"/><text class="u-t u-s" x="109" y="124">Šablona</text><text class="u-t u-s" x="109" y="139">e-mailu</text><text class="u-m u-xs" x="109" y="158">Volná</text><rect class="u-pn" x="100" y="174" width="104" height="46" rx="8"/><text class="u-t u-s" x="109" y="192">Text nápovědy</text><text class="u-m u-xs" x="109" y="211">Volná</text><rect class="u-pn" x="100" y="226" width="104" height="62" rx="8"/><text class="u-t u-s" x="109" y="244">Kontrola</text><text class="u-t u-s" x="109" y="259">zálohy</text><text class="u-m u-xs" x="109" y="278">Volná</text><text class="u-t u-s u-b" x="212" y="96">Rozpracováno</text><text class="u-m u-s" x="316" y="96" text-anchor="end">2</text><rect class="u-pn" x="212" y="106" width="104" height="62" rx="8"/><text class="u-t u-s" x="221" y="124">Tvoje karta</text><text class="u-t u-s" x="221" y="139">Formulář</text><text class="u-m u-xs" x="221" y="158">Kern</text><rect class="u-pn" x="212" y="174" width="104" height="62" rx="8"/><text class="u-t u-s" x="221" y="192">Návrh</text><text class="u-t u-s" x="221" y="207">tabulky</text><text class="u-m u-xs" x="221" y="226">Iris</text><text class="u-t u-s u-b" x="324" y="96">Ke kontrole</text><text class="u-m u-s" x="428" y="96" text-anchor="end">1</text><rect class="u-pn" x="324" y="106" width="104" height="62" rx="8"/><text class="u-t u-s" x="333" y="124">Oprava</text><text class="u-t u-s" x="333" y="139">fronty</text><text class="u-m u-xs" x="333" y="158">Brána kvality</text><text class="u-t u-s u-b" x="436" y="96">Hotovo</text><text class="u-m u-s" x="540" y="96" text-anchor="end">2</text><rect class="u-pn" x="436" y="106" width="104" height="62" rx="8"/><text class="u-t u-s" x="445" y="124">Popis</text><text class="u-t u-s" x="445" y="139">projektu</text><text class="u-m u-xs" x="445" y="158">Kern</text><rect class="u-pn" x="436" y="174" width="104" height="62" rx="8"/><text class="u-t u-s" x="445" y="192">Pravidla</text><text class="u-t u-s" x="445" y="207">souborů</text><text class="u-m u-xs" x="445" y="226">Iris</text><use href="#ui-fade"/></svg></figure>
     </li>
     <li>
-      <div class="ui-item rv"><h3><button type="button" class="ui-btn" id="ui-b4" aria-controls="ui-f4"><span class="ui-n" aria-hidden="true">4</span><span>Pošta</span></button></h3><p>Schránka, souhrny a účty, seznam zpráv a čtení s odpovědí na jednom místě.</p></div>
-      <figure class="ui-fig" id="ui-f4"><svg viewBox="0 0 340 190" role="img" aria-label="Kresba Pošty: záložky Schránka, Souhrny a Účty, seznam zpráv a okno pro čtení.">
-      <rect class="u-bg" width="340" height="190"/>
-      <text class="u-a" x="16" y="24">Schránka</text><text class="u-m" x="84" y="24">Souhrny</text><text class="u-m" x="148" y="24">Účty</text>
-      <rect class="u-pn" x="16" y="36" width="86" height="142"/><text class="u-t" x="24" y="56">Doručené</text><text class="u-m" x="24" y="78">Štítky</text><text class="u-m" x="24" y="100">Odeslané</text>
-      <rect class="u-on" x="110" y="36" width="96" height="42"/><rect class="u-pn" x="110" y="84" width="96" height="42"/><rect class="u-pn" x="110" y="132" width="96" height="46"/>
-      <rect class="u-pn" x="214" y="36" width="110" height="142"/><text class="u-t" x="224" y="56">Čtení zprávy</text><rect class="u-fx" x="222" y="146" width="94" height="24"/><text class="u-d" x="234" y="162">Odpovědět</text>
-    </svg></figure>
+      <h3><button type="button" class="ui-btn rv rv-s" id="ui-b4" aria-controls="ui-f4"><span class="ui-n" aria-hidden="true">4</span><span class="ui-name">Pošta</span></button></h3>
+      <p class="ui-desc">Schránka, souhrny a účty, seznam zpráv a čtení s odpovědí na jednom místě.</p>
+      <figure class="ui-fig" id="ui-f4"><svg viewBox="0 0 520 390" role="img" aria-label="Kresba Pošty: záložky Schránka, Souhrny a Účty, seznam zpráv a okno pro čtení."><use href="#ui-chrome"/><use href="#ui-win"/><use href="#ui-rail"/><circle class="u-rail-on" cx="68" cy="204" r="14"/><use href="#ui-rail-icons"/><text class="u-m u-s" x="100" y="66">Pošta</text><text class="u-a u-b" x="100" y="96">Schránka</text><text class="u-m" x="166" y="96">Souhrny</text><text class="u-m" x="228" y="96">Účty</text><text class="u-t u-s u-b" x="100" y="124">Doručené</text><text class="u-m u-s" x="100" y="148">Štítky</text><text class="u-m u-s" x="100" y="172">Koncepty</text><text class="u-m u-s" x="100" y="196">Odeslané</text><rect class="u-on" x="180" y="110" width="160" height="44" rx="8"/><text class="u-a u-s" x="190" y="126">Správce serveru</text><text class="u-m u-xs" x="190" y="142">Plánovaná údržba</text><text class="u-t u-s" x="190" y="174">Projektový tým</text><text class="u-m u-xs" x="190" y="190">Podklady k nástěnce</text><text class="u-t u-s" x="190" y="220">Denní souhrn</text><text class="u-m u-xs" x="190" y="236">Hotové a chybné běhy</text><text class="u-t u-s" x="190" y="266">Hosting</text><text class="u-m u-xs" x="190" y="282">Prodloužení domény</text><text class="u-t u-s" x="190" y="312">Účetní</text><text class="u-m u-xs" x="190" y="328">Doklady za měsíc</text><text class="u-h" x="352" y="124">Plánovaná údržba</text><text class="u-m u-s" x="352" y="144">Správce serveru</text><text class="u-t u-s" x="352" y="170">Ukázková zpráva. Potvrď</text><text class="u-t u-s" x="352" y="186">prosím termín údržby.</text><rect class="u-pn" x="352" y="200" width="150" height="62" rx="8"/><text class="u-m u-xs" x="362" y="218">Koncept odpovědi</text><text class="u-t u-s" x="362" y="236">Termín potvrzuji.</text><rect class="u-fx" x="352" y="274" width="82" height="26" rx="8"/><text class="u-d" x="362" y="291">Odpovědět</text><use href="#ui-fade"/></svg></figure>
     </li>
     <li>
-      <div class="ui-item rv"><h3><button type="button" class="ui-btn" id="ui-b5" aria-controls="ui-f5"><span class="ui-n" aria-hidden="true">5</span><span>Spotřeba</span></button></h3><p>Tokeny nebo náklady za 7, 30 a 90 dní. Sloupce v kresbě jsou ilustrační.</p></div>
-      <figure class="ui-fig" id="ui-f5"><svg viewBox="0 0 340 190" role="img" aria-label="Kresba grafu spotřeby s volbou období 7, 30 a 90 dní a přepínačem tokeny nebo náklady. Sloupce jsou ilustrační.">
-      <rect class="u-bg" width="340" height="190"/>
-      <text class="u-a" x="16" y="24">7 dní</text><text class="u-m" x="62" y="24">30 dní</text><text class="u-m" x="114" y="24">90 dní</text><text class="u-t" x="216" y="24">Tokeny</text><text class="u-m" x="268" y="24">Náklady</text>
-      <path class="u-fxp" d="M24 176v-40h28v40zM68 176v-62h28v62zM112 176v-30h28v30zM156 176v-84h28v84zM200 176v-52h28v52zM244 176v-112h28v112zM288 176v-70h28v70z"/>
-    </svg></figure>
+      <h3><button type="button" class="ui-btn rv rv-s" id="ui-b5" aria-controls="ui-f5"><span class="ui-n" aria-hidden="true">5</span><span class="ui-name">Spotřeba</span></button></h3>
+      <p class="ui-desc">Tokeny nebo náklady za 7, 30 a 90 dní. Sloupce v kresbě jsou ilustrační.</p>
+      <figure class="ui-fig" id="ui-f5"><svg viewBox="0 0 520 390" role="img" aria-label="Kresba grafu spotřeby s volbou období 7, 30 a 90 dní a přepínačem tokeny nebo náklady. Sloupce jsou ilustrační."><use href="#ui-chrome"/><use href="#ui-win"/><use href="#ui-rail"/><circle class="u-rail-on" cx="68" cy="240" r="14"/><use href="#ui-rail-icons"/><text class="u-m u-s" x="100" y="66">Spotřeba</text><rect class="u-on" x="100" y="80" width="56" height="24" rx="12"/><text class="u-a u-s" x="111" y="96">7 dní</text><rect class="u-pn" x="160" y="80" width="60" height="24" rx="12"/><text class="u-t u-s" x="171" y="96">30 dní</text><rect class="u-pn" x="224" y="80" width="60" height="24" rx="12"/><text class="u-t u-s" x="235" y="96">90 dní</text><text class="u-t u-b" x="402" y="97">Tokeny</text><text class="u-m" x="452" y="97">Náklady</text><path class="u-gl" d="M100 134H508M100 180H508M100 226H508"/><text class="u-m u-xs" x="100" y="124">Ukázkové hodnoty</text><rect class="u-fx" x="110" y="202" width="30" height="70" rx="3"/><rect class="u-fx" x="168" y="160" width="30" height="112" rx="3"/><rect class="u-fx" x="226" y="216" width="30" height="56" rx="3"/><rect class="u-fx" x="342" y="134" width="30" height="138" rx="3"/><rect class="u-fx" x="400" y="182" width="30" height="90" rx="3"/><rect class="u-fx" x="458" y="224" width="30" height="48" rx="3"/><rect class="u-unk" x="284" y="200" width="30" height="72" rx="3"/><text class="u-m u-xs" x="299" y="192" text-anchor="middle">Neznámé</text><text class="u-m u-xs" x="125" y="290" text-anchor="middle">Po</text><text class="u-m u-xs" x="183" y="290" text-anchor="middle">Út</text><text class="u-m u-xs" x="241" y="290" text-anchor="middle">St</text><text class="u-m u-xs" x="299" y="290" text-anchor="middle">Čt</text><text class="u-m u-xs" x="357" y="290" text-anchor="middle">Pá</text><text class="u-m u-xs" x="415" y="290" text-anchor="middle">So</text><text class="u-m u-xs" x="473" y="290" text-anchor="middle">Ne</text><text class="u-t u-s" x="100" y="316">Denní strop</text><rect class="u-pn" x="190" y="306" width="120" height="10" rx="5"/><rect class="u-fx" x="190" y="306" width="74" height="10" rx="5"/><text class="u-t u-s" x="330" y="316">Měsíční strop</text><rect class="u-pn" x="428" y="306" width="80" height="10" rx="5"/><rect class="u-fx" x="428" y="306" width="32" height="10" rx="5"/><use href="#ui-fade"/></svg></figure>
     </li>
     <li>
-      <div class="ui-item rv"><h3><button type="button" class="ui-btn" id="ui-b6" aria-controls="ui-f6"><span class="ui-n" aria-hidden="true">6</span><span>Přihlášení</span></button></h3><p>E-mail, heslo a kód z e-mailu. Zařízení si přihlášení může pamatovat 30 dní.</p></div>
-      <figure class="ui-fig" id="ui-f6"><svg viewBox="0 0 340 190" role="img" aria-label="Kresba přihlášení: pole E-mail a Heslo, kód z e-mailu, volba Pamatovat toto zařízení 30 dní a tlačítko Přihlásit.">
-      <rect class="u-bg" width="340" height="190"/>
-      <text class="u-m" x="60" y="22">E-mail</text><rect class="u-pn" x="60" y="28" width="220" height="24"/>
-      <text class="u-m" x="60" y="68">Heslo</text><rect class="u-pn" x="60" y="74" width="220" height="24"/>
-      <text class="u-m" x="60" y="114">Kód z e-mailu</text><rect class="u-on" x="60" y="120" width="220" height="24"/>
-      <text class="u-m" x="60" y="164">Pamatovat 30 dní</text><rect class="u-fx" x="200" y="150" width="80" height="26"/><text class="u-d" x="214" y="168">Přihlásit</text>
-    </svg></figure>
+      <h3><button type="button" class="ui-btn rv rv-s" id="ui-b6" aria-controls="ui-f6"><span class="ui-n" aria-hidden="true">6</span><span class="ui-name">Přihlášení</span></button></h3>
+      <p class="ui-desc">E-mail, heslo a kód z e-mailu. Zařízení si přihlášení může pamatovat 30 dní.</p>
+      <figure class="ui-fig" id="ui-f6"><svg viewBox="0 0 520 390" role="img" aria-label="Kresba přihlášení: pole E-mail a Heslo, kód z e-mailu, volba Pamatovat toto zařízení 30 dní a tlačítko Přihlásit."><use href="#ui-chrome"/><use href="#ui-win"/><text class="u-m u-s" x="100" y="66">Přihlášení</text><use href="#m-mark" transform="translate(76 78) scale(.5) translate(-3 -5)"/><text class="u-h" x="104" y="96">Přihlášení</text><text class="u-m u-s" x="76" y="122">E-mail</text><rect class="u-pn" x="76" y="128" width="232" height="28" rx="7"/><text class="u-t" x="86" y="147">ty@example.cz</text><text class="u-m u-s" x="76" y="174">Heslo</text><rect class="u-pn" x="76" y="180" width="232" height="28" rx="7"/><circle class="u-tp" cx="90" cy="194" r="3"/><circle class="u-tp" cx="101" cy="194" r="3"/><circle class="u-tp" cx="112" cy="194" r="3"/><circle class="u-tp" cx="123" cy="194" r="3"/><circle class="u-tp" cx="134" cy="194" r="3"/><circle class="u-tp" cx="145" cy="194" r="3"/><circle class="u-tp" cx="156" cy="194" r="3"/><circle class="u-tp" cx="167" cy="194" r="3"/><circle class="u-tp" cx="178" cy="194" r="3"/><circle class="u-tp" cx="189" cy="194" r="3"/><text class="u-m u-s" x="76" y="220">Kód z e-mailu</text><rect class="u-pn" x="76" y="226" width="28" height="30" rx="6"/><text class="u-t" x="90" y="246" text-anchor="middle">4</text><rect class="u-pn" x="110" y="226" width="28" height="30" rx="6"/><text class="u-t" x="124" y="246" text-anchor="middle">8</text><rect class="u-on" x="144" y="226" width="28" height="30" rx="6"/><text class="u-t" x="158" y="246" text-anchor="middle">1</text><rect class="u-pn" x="178" y="226" width="28" height="30" rx="6"/><rect class="u-pn" x="212" y="226" width="28" height="30" rx="6"/><rect class="u-pn" x="246" y="226" width="28" height="30" rx="6"/><rect class="u-fx" x="76" y="270" width="14" height="14" rx="4"/><path class="u-chk" d="m79 277 3 3 5-6"/><text class="u-t u-s" x="98" y="281">Pamatovat toto zařízení 30 dní</text><rect class="u-fx" x="76" y="296" width="232" height="32" rx="8"/><text class="u-d" x="192" y="317" text-anchor="middle">Přihlásit</text><text class="u-t u-b" x="350" y="96">Zařízení a relace</text><text class="u-t u-s" x="350" y="122">Tento počítač</text><text class="u-m u-xs" x="350" y="138">Relace 12 hodin</text><text class="u-a u-xs" x="350" y="154">Odhlásit</text><text class="u-t u-s" x="350" y="186">Telefon</text><text class="u-m u-xs" x="350" y="202">Pamatováno 30 dní</text><text class="u-a u-xs" x="350" y="218">Odhlásit</text><use href="#ui-fade"/></svg></figure>
     </li>
   </ol>
+  <p class="ui-note rv">Zjednodušené kresby skutečných obrazovek. Názvy, obsah a grafy v nich jsou ilustrační.</p>
   </div>
 </section>
 
 <section class="all" id="vse" aria-labelledby="vse-title">
-  <div class="sec-head rv">
-    <h2 id="vse-title">Co všechno Melaris umí</h2>
-    <ul class="legend" aria-label="Význam stavů">
-      <li><span class="st st-h">Hotové</span> funguje v aplikaci a má automatické testy</li>
-      <li><span class="st st-t">V testu</span> napsané, skutečné účty nebo server čekají na ověření</li>
-      <li><span class="st st-v">Vypnuté</span> kód existuje, výchozím stavem neběží</li>
-    </ul>
-  </div>
-  <div class="fg rv">
+  <h2 id="vse-title" class="rv">Co všechno Melaris umí</h2>
+  <ul class="legend rv" aria-label="Význam stavů" data-legend>
+    <li data-state="h"><span class="num" aria-hidden="true">42</span><span class="legend-tx"><span class="st st-h">Hotové</span><span class="legend-def">funguje v aplikaci a má automatické testy</span></span></li>
+    <li data-state="t"><span class="num" aria-hidden="true">15</span><span class="legend-tx"><span class="st st-t">V testu</span><span class="legend-def">napsané, skutečné účty nebo server čekají na ověření</span></span></li>
+    <li data-state="v"><span class="num" aria-hidden="true">3</span><span class="legend-tx"><span class="st st-v">Vypnuté</span><span class="legend-def">kód existuje, výchozím stavem neběží</span></span></li>
+  </ul>
+  <div class="vse-browser rv" data-vse>
+  <div class="fg">
     <h3>Chat a běh úkolu</h3>
     <ul class="fgrid">
       <li class="fc"><h4>Chat a fronta</h4><p>Rostoucí editor, přílohy, fronta zpráv během práce, Zopakovat a Upravit a poslat znovu.</p><span class="st st-h">Hotové</span></li>
@@ -361,7 +332,7 @@
       <li class="fc"><h4>Souběh úloh</h4><p>Jedna až čtyři úlohy najednou, výchozí je jedna. Kontroluje volnou paměť a zátěž.</p><span class="st st-h">Hotové</span></li>
     </ul>
   </div>
-  <div class="fg rv">
+  <div class="fg">
     <h3>Specialisté a delegace</h3>
     <ul class="fgrid">
       <li class="fc"><h4>23 specialistů</h4><p>Vlastní jména, portréty a instrukce. Katalog a skilly najdeš na stránce Tým.</p><span class="st st-h">Hotové</span></li>
@@ -370,7 +341,7 @@
       <li class="fc"><h4>Svolání týmu</h4><p>Diskusní kolo, kde každý odpoví pod svou identitou, bez práce se soubory.</p><span class="st st-h">Hotové</span></li>
     </ul>
   </div>
-  <div class="fg rv">
+  <div class="fg">
     <h3>Skilly</h3>
     <ul class="fgrid">
       <li class="fc"><h4>Vlastní balík</h4><p>30 skillů s manifestem a kontrolou integrity. Skill sám nepřidá žádné oprávnění.</p><span class="st st-h">Hotové</span></li>
@@ -380,7 +351,7 @@
       <li class="fc"><h4>Sběrnice schopností</h4><p>Hledá nové nástroje a zkouší je odděleně. Do provozu je pustí jen člověk.</p><span class="st st-t">V testu</span></li>
     </ul>
   </div>
-  <div class="fg rv">
+  <div class="fg">
     <h3>Plánovač a cíle</h3>
     <ul class="fgrid">
       <li class="fc"><h4>Plán</h4><p>Úlohy v čase nebo při události přes webhook. Plánované úlohy smí jen číst a odpovídat. Běží se spuštěným Melarisem.</p><span class="st st-h">Hotové</span></li>
@@ -390,7 +361,7 @@
       <li class="fc"><h4>Sociální sítě</h4><p>Fronta konceptů pro Facebook a Instagram se schválením. Publikování potřebuje přístup Meta.</p><span class="st st-t">V testu</span></li>
     </ul>
   </div>
-  <div class="fg rv">
+  <div class="fg">
     <h3>Paměť a mozek</h3>
     <ul class="fgrid">
       <li class="fc"><h4>Dlouhodobá paměť</h4><p>Dvě krátké poznámky. Mel do nich sám nepíše, jen navrhne a ty schválíš. Návrhy po úloze zapneš v nastavení.</p><span class="st st-h">Hotové</span></li>
@@ -398,7 +369,7 @@
       <li class="fc"><h4>Pokyny a pravidla</h4><p>Projektové pokyny jdou do promptu jako data, podezřelé se označí varováním.</p><span class="st st-h">Hotové</span></li>
     </ul>
   </div>
-  <div class="fg rv">
+  <div class="fg">
     <h3>Projekty, verze a nástěnka</h3>
     <ul class="fgrid">
       <li class="fc"><h4>Projekty a šablony</h4><p>Konverzace, soubory, karty a pokyny pohromadě. Šablony pro web, knihovnu, rešerši a ONhost.</p><span class="st st-h">Hotové</span></li>
@@ -409,7 +380,7 @@
       <li class="fc"><h4>Brána kvality</h4><p>Příkaz projektu se spustí až po tvém potvrzení. Mel kartu sám neuzavře.</p><span class="st st-h">Hotové</span></li>
     </ul>
   </div>
-  <div class="fg rv">
+  <div class="fg">
     <h3>Pošta</h3>
     <ul class="fgrid">
       <li class="fc"><h4>Schránka</h4><p>IMAP a SMTP, víc účtů, složky a štítky. Odesíláš jen ty, po potvrzení. Skutečné účty čekají na ověření.</p><span class="st st-t">V testu</span></li>
@@ -417,7 +388,7 @@
       <li class="fc"><h4>Čtečka Gmailu</h4><p>Jen čtení přes vlastní OAuth klienta, místní návrhy a export. Nic neodesílá.</p><span class="st st-t">V testu</span></li>
     </ul>
   </div>
-  <div class="fg rv">
+  <div class="fg">
     <h3>Spotřeba a limity</h3>
     <ul class="fgrid">
       <li class="fc"><h4>Přehled spotřeby</h4><p>Graf za 7, 30 a 90 dní, tokeny nebo náklady. Chybějící údaj zůstane neznámý.</p><span class="st st-h">Hotové</span></li>
@@ -426,7 +397,7 @@
       <li class="fc"><h4>Pyramida a monitoring</h4><p>Mel, předplatná, služby a stroj v jednom pohledu. Vedle toho živé CPU, paměť a disk.</p><span class="st st-h">Hotové</span></li>
     </ul>
   </div>
-  <div class="fg rv">
+  <div class="fg">
     <h3>Připojení a průvodci</h3>
     <ul class="fgrid">
       <li class="fc"><h4>Připojit AI</h4><p>Tři volby podle toho, co máš: předplatné, API klíč, nebo model na počítači přes Ollamu.</p><span class="st st-h">Hotové</span></li>
@@ -437,7 +408,7 @@
       <li class="fc"><h4>MCP</h4><p>Vlastní MCP servery v CLI. Projektová konfigurace nepřepíše tvoji.</p><span class="st st-h">Hotové</span></li>
     </ul>
   </div>
-  <div class="fg rv">
+  <div class="fg">
     <h3>Účty a role</h3>
     <ul class="fgrid">
       <li class="fc"><h4>E-mail, heslo a kód</h4><p>Ověřená adresa je přihlašovací jméno, kód z e-mailu druhý faktor, TOTP volitelně. Skutečné SMTP čeká na ověření.</p><span class="st st-t">V testu</span></li>
@@ -446,7 +417,7 @@
       <li class="fc"><h4>Oddělená data</h4><p>Osobní chaty, pošta, paměť a klíče každého zvlášť. Ani vlastník projektu nečte cizí chat.</p><span class="st st-t">V testu</span></li>
     </ul>
   </div>
-  <div class="fg rv">
+  <div class="fg">
     <h3>Zabezpečení a audit</h3>
     <ul class="fgrid">
       <li class="fc"><h4>Řetězený audit</h4><p>Schválení a změny oprávnění v záznamu s SHA-256 a HMAC. Odhalí zásah, nezabrání mu.</p><span class="st st-h">Hotové</span></li>
@@ -457,7 +428,7 @@
       <li class="fc"><h4>Draft PR</h4><p>Knihovna umí jen novou větev a draft PR, bez merge. Skutečná App zatím neexistuje.</p><span class="st st-v">Vypnuté</span></li>
     </ul>
   </div>
-  <div class="fg rv">
+  <div class="fg">
     <h3>Aktualizace a obnova</h3>
     <ul class="fgrid">
       <li class="fc"><h4>Aktualizace</h4><p>Kontrola každých 6 hodin nic nespouští. Po potvrzení udělá fast-forward a při chybě se vrátí.</p><span class="st st-h">Hotové</span></li>
@@ -468,12 +439,13 @@
       <li class="fc"><h4>Hosting</h4><p>Samostatný modul je zatím simulační pilot. Produkční hosting není hotový.</p><span class="st st-t">V testu</span></li>
     </ul>
   </div>
-  <div class="fg rv">
+  <div class="fg">
     <h3>CLI</h3>
     <ul class="fgrid">
       <li class="fc"><h4>Chat v terminálu</h4><p>Příkaz melaris v projektu, přepínání /model a /mode, /plan bez zápisu, /diff a /resume.</p><span class="st st-h">Hotové</span></li>
       <li class="fc"><h4>Správa z terminálu</h4><p>Nástěnka, plán, předplatná, zálohy, audit, účty a doctor pro diagnostiku.</p><span class="st st-h">Hotové</span></li>
     </ul>
+  </div>
   </div>
 </section>
 
@@ -611,6 +583,14 @@
 <svg class="sprite" aria-hidden="true" focusable="false">
   <defs>
     <linearGradient id="ruby-use" x1="3" y1="5" x2="43" y2="39" gradientUnits="userSpaceOnUse"><stop stop-color="#f21b68"/><stop offset=".5" stop-color="#d91b60"/><stop offset="1" stop-color="#85254e"/></linearGradient>
+    <pattern id="ui-grid-p" width="26" height="26" patternUnits="userSpaceOnUse"><path class="u-gr" d="M26 0H0V26"/></pattern>
+    <radialGradient id="ui-glow-p"><stop class="u-glow0" offset="0"/><stop class="u-glow1" offset="1"/></radialGradient>
+    <linearGradient id="ui-fade-p" x1="0" y1="0" x2="0" y2="1"><stop class="u-fade0" offset="0"/><stop class="u-fade1" offset="1"/></linearGradient>
+    <g id="ui-chrome"><rect class="u-bd" width="520" height="390"/><rect width="520" height="390" fill="url(#ui-grid-p)"/><ellipse cx="240" cy="0" rx="210" ry="70" fill="url(#ui-glow-p)"/></g>
+    <g id="ui-win"><rect class="u-win" x="48" y="48" width="520" height="400" rx="9"/><path class="u-sep" d="M48 76H520"/><circle class="u-dot" cx="62" cy="62" r="3.5"/><circle class="u-dot" cx="74" cy="62" r="3.5"/><circle class="u-dot" cx="86" cy="62" r="3.5"/></g>
+    <path id="ui-rail" class="u-sep" d="M88 76V390"/>
+    <g id="ui-rail-icons" class="u-ic"><path d="M61 90h14v9h-8l-3 3v-3h-3z"/><circle cx="68" cy="128" r="3"/><path d="M62 139c1-5 11-5 12 0"/><path d="M61 162h14v13H61zM66 162v13"/><path d="M61 200h14v10H61zM61 200l7 6 7-6"/><path d="M62 248v-6M68 248v-11M74 248v-8"/></g>
+    <rect id="ui-fade" x="49" y="356" width="471" height="34" fill="url(#ui-fade-p)"/>
     <g id="m-mark">
       <path fill="url(#ruby-use)" d="M3 39V7l9-2 11 17L34 5l9 2v32H32V23L23 36l-9-13v16H3Z"/>
       <path fill="#ff5596" d="m3 7 9-2 11 17-5 7L3 7Z"/>

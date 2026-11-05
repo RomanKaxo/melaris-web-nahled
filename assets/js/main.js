@@ -287,36 +287,59 @@
     window.addEventListener('load', layout);
   }
 
-  // Schéma 3: kroky běhu, jde po nich přejíždět.
-  // Obrazovky: jeden otevřený bod, kresba vedle něj, na telefonu přímo pod ním.
+  // Obrazovky: jeden otevřený bod. Na počítači karta vedle seznamu, jinak se rozbalí přímo v položce.
   function initUiPanel() {
     var panel = document.querySelector('[data-ui-panel]');
     if (!panel) return;
     var rows = Array.prototype.slice.call(panel.querySelectorAll('.ui-list li')).map(function (li) {
-      return { item: li.querySelector('.ui-item'), button: li.querySelector('.ui-btn'), fig: li.querySelector('.ui-fig') };
+      return { li: li, button: li.querySelector('.ui-btn'), fig: li.querySelector('.ui-fig'), anim: null };
     });
+    var wide = window.matchMedia('(min-width:1024px)');
+    var EASE = 'cubic-bezier(.4,0,.2,1)';
+    var current = 0;
+    function run(row, frames, done) {
+      if (row.anim) row.anim.cancel();
+      row.anim = row.fig.animate(frames, { duration: 350, easing: EASE });
+      row.anim.onfinish = function () { row.anim = null; if (done) done(); };
+    }
+    function leave(row) {
+      row.fig.classList.add('leave');
+      var height = row.fig.offsetHeight;
+      run(row, wide.matches
+        ? [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-8px) scale(.98)' }]
+        : [{ height: height + 'px', marginBottom: '16px', opacity: 1 }, { height: 0, marginBottom: 0, opacity: 0 }],
+      function () { row.fig.classList.remove('leave'); });
+    }
+    function enter(row) {
+      var height = row.fig.offsetHeight;
+      run(row, wide.matches
+        ? [{ opacity: 0, transform: 'translateY(12px) scale(.98)' }, { opacity: 1, transform: 'none' }]
+        : [{ height: 0, marginBottom: 0, opacity: 0 }, { height: height + 'px', marginBottom: '16px', opacity: 1 }]);
+    }
     function show(index, animate) {
+      var moving = animate && motionOn() && index !== current && !!rows[0].fig.animate;
       rows.forEach(function (row, i) {
         var on = i === index;
-        row.item.classList.toggle('on', on);
+        if (row.anim) { row.anim.cancel(); row.anim = null; }
+        row.fig.classList.remove('leave');
+        row.li.classList.toggle('on', on);
         row.button.setAttribute('aria-expanded', String(on));
         row.fig.hidden = !on;
-        row.fig.classList.toggle('enter', on && animate);
       });
+      if (moving) { leave(rows[current]); enter(rows[index]); }
+      current = index;
     }
     rows.forEach(function (row, i) {
-      row.item.addEventListener('click', function () {
-        if (row.fig.hidden) show(i, true);
-      });
+      row.button.addEventListener('click', function () { show(i, true); });
     });
     show(0, false);
     panel.classList.add('ready');
   }
 
+  // Schéma 3: kroky běhu, jde po nich přejíždět. Křivka se počítá ze skutečné velikosti grafu.
   function initGates() {
     var fig = document.getElementById('gates');
     if (!fig) return;
-    var points = [[40, 212], [140, 182], [240, 152], [340, 104], [440, 72], [560, 40]];
     var chart = fig.querySelector('[data-chart]');
     var range = fig.querySelector('[data-range]');
     var steps = Array.prototype.slice.call(fig.querySelectorAll('[data-steps] > li'));
@@ -326,32 +349,25 @@
     var area = fig.querySelector('[data-area]');
     var clip = fig.querySelector('[data-clip]');
     var marks = fig.querySelector('[data-marks]');
+    var labels = fig.querySelector('[data-labels]');
+    var human = fig.querySelector('[data-human]');
     var head = fig.querySelector('[data-head]');
     var ring = fig.querySelector('[data-head-ring]');
     var pill = fig.querySelector('[data-pill]');
     var note = fig.querySelector('[data-gate-note]');
     var svg = chart.querySelector('svg');
     var titles = steps.map(function (s) { return s.querySelector('h4').textContent; });
-
-    function segment(a, b) {
-      var mx = (a[0] + b[0]) / 2;
-      return 'C' + mx + ' ' + a[1] + ' ' + mx + ' ' + b[1] + ' ' + b[0] + ' ' + b[1];
-    }
-    var d = 'M' + points[0][0] + ' ' + points[0][1];
+    var LEVELS = [0.78, 0.68, 0.56, 0.38, 0.26, 0.14];
+    var HUMAN = 3;
+    // Polovina jezdce: značky na křivce leží přesně nad jeho polohami.
+    var INSET = 13;
+    var points = [];
     var lengths = [0];
-    var probe = el('path', {});
-    for (var i = 1; i < points.length; i++) {
-      d += segment(points[i - 1], points[i]);
-      probe.setAttribute('d', d);
-      lengths.push(probe.getTotalLength());
-    }
-    curveEl.setAttribute('d', d);
-    curveOn.setAttribute('d', d);
-    var total = lengths[lengths.length - 1];
-    curveOn.setAttribute('stroke-dasharray', total + ' ' + total);
-    area.setAttribute('d', d + 'L560 244H40Z');
-    points.forEach(function (p) { el('circle', { class: 'mark', cx: p[0], cy: p[1], r: 4 }, marks); });
-    var markEls = Array.prototype.slice.call(marks.children);
+    var markEls = [];
+    var labelEls = [];
+    var total = 1;
+    var width = 1;
+    var height = 1;
 
     var pos = 0;
     var target = 0;
@@ -359,15 +375,53 @@
     var holdUntil = 0;
     var DWELL = 2.8;
 
-    note.style.left = (340 / 600 * 100) + '%';
-    root.classList.add('gates-ready');
-
+    function segment(a, b) {
+      var mx = (a[0] + b[0]) / 2;
+      return 'C' + mx + ' ' + a[1] + ' ' + mx + ' ' + b[1] + ' ' + b[0] + ' ' + b[1];
+    }
+    function layout() {
+      var box = chart.getBoundingClientRect();
+      if (!box.width) return;
+      width = box.width;
+      height = box.height;
+      fitSvg(svg, box);
+      var floor = height - 30;
+      points = LEVELS.map(function (level, i) {
+        return [INSET + i * (width - 2 * INSET) / (LEVELS.length - 1), level * floor];
+      });
+      var d = 'M' + points[0][0] + ' ' + points[0][1];
+      var probe = el('path', {});
+      lengths = [0];
+      for (var i = 1; i < points.length; i++) {
+        d += segment(points[i - 1], points[i]);
+        probe.setAttribute('d', d);
+        lengths.push(probe.getTotalLength());
+      }
+      curveEl.setAttribute('d', d);
+      curveOn.setAttribute('d', d);
+      total = lengths[lengths.length - 1];
+      curveOn.setAttribute('stroke-dasharray', total + ' ' + total);
+      area.setAttribute('d', d + 'L' + points[points.length - 1][0] + ' ' + floor + 'H' + points[0][0] + 'Z');
+      human.setAttribute('d', 'M' + points[HUMAN][0] + ' 22V' + floor);
+      note.style.left = points[HUMAN][0] + 'px';
+      marks.textContent = '';
+      labels.textContent = '';
+      markEls = points.map(function (p) { return el('circle', { class: 'mark', cx: p[0], cy: p[1], r: 4 }, marks); });
+      labelEls = points.map(function (p, i) {
+        var anchor = i === 0 ? 'start' : (i === points.length - 1 ? 'end' : 'middle');
+        var text = el('text', { class: 'gate-lab', x: i === 0 ? 0 : (i === points.length - 1 ? width : p[0]), y: height - 6, 'text-anchor': anchor }, labels);
+        text.textContent = titles[i];
+        return text;
+      });
+      draw();
+    }
     function lengthAt(p) {
       var a = Math.floor(p);
       var b = Math.min(lengths.length - 1, a + 1);
       return lengths[a] + (lengths[b] - lengths[a]) * (p - a);
     }
     function draw() {
+      if (!points.length) return;
       var len = lengthAt(pos);
       var q = curveEl.getPointAtLength(len);
       head.setAttribute('cx', q.x);
@@ -377,8 +431,10 @@
       curveOn.setAttribute('stroke-dashoffset', total - len);
       clip.setAttribute('width', q.x);
       markEls.forEach(function (m, i) { m.classList.toggle('on', i <= pos + 0.02); });
-      pill.style.left = clamp(q.x / 600 * 100, 13, 87) + '%';
-      pill.style.top = (q.y / 260 * 100) + '%';
+      labelEls.forEach(function (l, i) { l.classList.toggle('on', i === target); });
+      var half = pill.offsetWidth / 2;
+      pill.style.left = clamp(q.x, half, Math.max(half, width - half)) + 'px';
+      pill.style.top = q.y + 'px';
     }
     function show(index, announce) {
       target = index;
@@ -387,6 +443,7 @@
       list.setAttribute('aria-live', announce ? 'polite' : 'off');
       steps.forEach(function (s, i) { s.hidden = i !== index; });
       pill.textContent = titles[index];
+      labelEls.forEach(function (l, i) { l.classList.toggle('on', i === index); });
     }
     function interact(index) {
       holdUntil = performance.now() + 9000;
@@ -396,15 +453,18 @@
     }
     range.addEventListener('input', function () { interact(Number(range.value)); });
     chart.addEventListener('pointermove', function (event) {
-      var rect = svg.getBoundingClientRect();
-      var x = (event.clientX - rect.left) / rect.width * 600;
+      var x = event.clientX - svg.getBoundingClientRect().left;
       var best = 0;
       points.forEach(function (p, i) { if (Math.abs(p[0] - x) < Math.abs(points[best][0] - x)) best = i; });
       if (best !== target || event.pointerType !== 'mouse') interact(best);
       holdUntil = performance.now() + 9000;
     });
+    root.classList.add('gates-ready');
     show(0, false);
-    draw();
+    layout();
+    if ('ResizeObserver' in window) new ResizeObserver(layout).observe(chart);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
+    window.addEventListener('load', layout);
     register(fig, {
       tick: function (dt, now) {
         var diff = target - pos;
@@ -443,38 +503,139 @@
     items.forEach(function (i) { io.observe(i); });
   }
 
-  // Na telefonu jsou skupiny funkcí sbalené, jinak by stránka byla zbytečně dlouhá.
-  function initGroups() {
-    var groups = Array.prototype.slice.call(document.querySelectorAll('.fg'));
+  // Funkce: filtr podle stavu a kategorie. Bez JS zůstane vidět všechno.
+  function initVse() {
+    var box = document.querySelector('[data-vse]');
+    var legend = document.querySelector('[data-legend]');
+    if (!box || !legend) return;
     var phone = window.matchMedia('(max-width:719px)');
-    function apply() {
-      groups.forEach(function (group, i) {
-        var title = group.querySelector('h3');
-        var grid = group.querySelector('.fgrid');
-        var name = title.textContent;
-        title.textContent = '';
-        if (phone.matches) {
-          var button = document.createElement('button');
-          var open = i === 0;
-          button.type = 'button';
-          button.className = 'fg-btn';
-          button.textContent = name;
-          button.setAttribute('aria-expanded', String(open));
-          grid.hidden = !open;
-          button.addEventListener('click', function () {
-            var next = button.getAttribute('aria-expanded') !== 'true';
-            button.setAttribute('aria-expanded', String(next));
-            grid.hidden = !next;
-          });
-          title.appendChild(button);
-        } else {
-          title.textContent = name;
-          grid.hidden = false;
-        }
-      });
+    function html(tag, cls, parent, text) {
+      var node = document.createElement(tag);
+      if (cls) node.className = cls;
+      if (text !== undefined) node.textContent = text;
+      if (parent) parent.appendChild(node);
+      return node;
     }
-    apply();
-    if (phone.addEventListener) phone.addEventListener('change', apply);
+    function stateOf(li) {
+      var st = li.querySelector('.st');
+      return st.classList.contains('st-h') ? 'h' : (st.classList.contains('st-t') ? 't' : 'v');
+    }
+    function catRow(name, parent) {
+      var li = html('li', '', parent);
+      var button = html('button', 'cat', li);
+      button.type = 'button';
+      var num = html('span', 'num', button);
+      num.setAttribute('aria-hidden', 'true');
+      html('span', 'cat-name', button, name);
+      return { li: li, button: button, num: num };
+    }
+
+    var groups = Array.prototype.slice.call(box.querySelectorAll('.fg'));
+    var cats = html('ul', 'cats');
+    cats.setAttribute('aria-label', 'Kategorie funkcí');
+    var all = catRow('Všechny kategorie', cats);
+    var rows = groups.map(function (fg, i) {
+      var row = catRow(fg.querySelector('h3').textContent, cats);
+      row.fg = fg;
+      fg.id = 'vse-g' + (i + 1);
+      row.button.setAttribute('aria-controls', fg.id);
+      row.items = Array.prototype.slice.call(fg.querySelectorAll('.fc')).map(function (li) {
+        return { li: li, state: stateOf(li) };
+      });
+      return row;
+    });
+    var panel = html('div', 'vse-panel');
+    var live = html('p', 'vh');
+    live.setAttribute('aria-live', 'polite');
+    box.textContent = '';
+    box.appendChild(cats);
+    box.appendChild(panel);
+    box.appendChild(live);
+
+    var total = 0;
+    var tally = { h: 0, t: 0, v: 0 };
+    rows.forEach(function (row) { row.items.forEach(function (it) { total++; tally[it.state]++; }); });
+
+    // Položky legendy se stanou filtrem, přidá se k nim Vše. Počty jdou přímo z obsahu.
+    var filters = {};
+    var allLi = html('li');
+    allLi.dataset.state = 'all';
+    var allNum = html('span', 'num', allLi, String(total));
+    allNum.setAttribute('aria-hidden', 'true');
+    var allTx = html('span', 'legend-tx', allLi);
+    html('span', 'legend-all', allTx, 'Vše');
+    html('span', 'legend-def', allTx, 'všechny funkce');
+    legend.insertBefore(allLi, legend.firstChild);
+    Array.prototype.slice.call(legend.children).forEach(function (li) {
+      var state = li.dataset.state;
+      var button = html('button', 'flt');
+      button.type = 'button';
+      while (li.firstChild) button.appendChild(li.firstChild);
+      li.appendChild(button);
+      if (state !== 'all') button.querySelector('.num').textContent = String(tally[state]);
+      button.setAttribute('aria-label', button.textContent.replace(/^\d+/, '').replace(/\s+/g, ' ').trim() + ', počet ' + button.querySelector('.num').textContent);
+      filters[state] = button;
+      button.addEventListener('click', function () { setFilter(state); });
+    });
+    legend.setAttribute('role', 'group');
+    legend.setAttribute('aria-label', 'Filtr podle stavu');
+    legend.dataset.ready = '1';
+
+    var filter = 'all';
+    var cat = 0;
+    var before = 0;
+
+    function matches(it) { return filter === 'all' || it.state === filter; }
+    function render(announce) {
+      var shown = 0;
+      Object.keys(filters).forEach(function (k) { filters[k].setAttribute('aria-pressed', String(k === filter)); });
+      rows.forEach(function (row, i) {
+        var count = 0;
+        row.items.forEach(function (it) {
+          var on = matches(it);
+          it.li.hidden = !on;
+          if (on) count++;
+        });
+        var visible = count > 0 && (cat === 'all' || cat === i);
+        row.num.textContent = String(count);
+        row.button.disabled = count === 0;
+        row.button.setAttribute('aria-expanded', String(visible));
+        row.button.setAttribute('aria-current', String(cat === i));
+        row.li.classList.toggle('on', visible);
+        row.fg.hidden = !visible;
+        if (visible) shown += count;
+      });
+      all.num.textContent = String(filter === 'all' ? total : tally[filter]);
+      all.button.setAttribute('aria-current', String(cat === 'all'));
+      all.li.classList.toggle('on', cat === 'all');
+      if (announce) live.textContent = 'Zobrazeno ' + shown + ' z ' + total;
+    }
+    function setFilter(next) {
+      // Filtr hledá napříč kategoriemi; Vše vrátí předchozí kategorii.
+      if (next !== 'all' && filter === 'all') before = cat;
+      if (next !== 'all') cat = 'all';
+      else if (filter !== 'all') cat = before;
+      filter = next;
+      render(true);
+    }
+    function setCat(next, row) {
+      cat = next;
+      render(true);
+      var anchor = phone.matches ? row.li : panel;
+      if (anchor.getBoundingClientRect().top < 0) anchor.scrollIntoView({ block: 'start' });
+    }
+    all.button.addEventListener('click', function () { setCat('all', all); });
+    rows.forEach(function (row, i) {
+      row.button.addEventListener('click', function () { setCat(i, row); });
+    });
+    // Na telefonu se obsah rozbalí v rámečku kategorie, jinak je v panelu vedle.
+    function place() {
+      rows.forEach(function (row) { (phone.matches ? row.li : panel).appendChild(row.fg); });
+    }
+    place();
+    if (phone.addEventListener) phone.addEventListener('change', place);
+    render(false);
+    box.classList.add('ready');
   }
 
   function initTheme() {
@@ -500,7 +661,7 @@
 
   initTheme();
   initMotionToggle();
-  initGroups();
+  initVse();
   initReveal();
   initHero();
   initFlow();
